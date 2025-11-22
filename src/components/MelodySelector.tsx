@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   Pressable,
@@ -10,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { MELODIES, type Melody } from '../melodies';
+import { melodyPlayer } from '../melodyPlayer';
 
 interface MelodySelectorProps {
   readonly selectedId?: string;
@@ -39,7 +39,6 @@ export function MelodySelector({
     externalSelectedId ?? null
   );
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
 
   // Sync avec l'extérieur si le parent contrôle la sélection
   useEffect(() => {
@@ -47,15 +46,6 @@ export function MelodySelector({
       setInternalSelectedId(externalSelectedId);
     }
   }, [externalSelectedId]);
-
-  // Nettoyage du son à la destruction
-  useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
-      }
-    };
-  }, []);
 
   const handlePress = async (melodyId: string) => {
     const melody = MELODIES.find((m: Melody) => m.id === melodyId);
@@ -66,42 +56,18 @@ export function MelodySelector({
     setInternalSelectedId(newSelectedId);
     onChangeSelected?.(newSelectedId);
 
-    // Si on reclique sur la même qui joue → on arrête
+    // Si on reclique sur la même → on arrête le son
     if (playingId === melody.id) {
-      if (soundRef.current) {
-        try {
-          await soundRef.current.stopAsync();
-          await soundRef.current.unloadAsync();
-        } catch {
-          // ignore
-        }
-        soundRef.current = null;
-      }
+      await melodyPlayer.stop();
       setPlayingId(null);
       return;
     }
 
-    // Sinon on arrête l’ancien son
-    if (soundRef.current) {
-      try {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      } catch {
-        // ignore
-      }
-      soundRef.current = null;
-    }
-
-    // On joue un aperçu
+    // Sinon on lance un aperçu (non bouclé)
     try {
-      const { sound } = await Audio.Sound.createAsync(melody.audio, {
-        shouldPlay: true,
-      });
-      soundRef.current = sound;
+      await melodyPlayer.play(melody.id, { loop: false, volume: 1 });
       setPlayingId(melody.id);
-      await sound.playAsync();
-    } catch (error) {
-      console.warn('Erreur lecture son', error);
+    } catch {
       setPlayingId(null);
     }
   };

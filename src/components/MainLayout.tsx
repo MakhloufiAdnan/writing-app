@@ -21,8 +21,8 @@ interface MainLayoutProps {
 
 /**
  * Disposition des 4 zones dans le main :
- * 1. Zone d'écriture (pleine largeur, hauteur = 50% de la largeur écran)
- * 2. Zone de sélection des mélodies
+ * 1. Zone d'écriture (pleine largeur, hauteur = 40% de la largeur écran)
+ * 2. Zone de sélection des mélodies 
  * 3. Zone métriques cinétiques (gauche en tablette)
  * 4. Zone métriques cinématiques (droite en tablette)
  */
@@ -33,15 +33,27 @@ export function MainLayout({
   onChangeSelectedMelody,
   onMetricsChange,
 }: MainLayoutProps) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isTablet = width >= 768;
-  const zone1Height = width * 0.4;
+  const isPortrait = height >= width;
+
+  // En portrait sur téléphone → zone haute (≈ 2× largeur)
+  let zone1Height: number;
+
+  if (isTablet) {
+    zone1Height = width * 0.6;
+  } else if (isPortrait) {
+    zone1Height = width * 2;
+  } else {
+    zone1Height = width * 1.2;
+  }
 
   return (
     <View style={styles.root}>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={!isRecording}
       >
         {/* Zone 1 : Zone d'écriture */}
         <View style={styles.fullWidth}>

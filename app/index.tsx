@@ -30,7 +30,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaProvider>
-      <ScrollView contentContainerStyle={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.root}
+
+        // Désactiver le scroll pendant l'enregistrement
+        scrollEnabled={!isRecording}
+      >
+        
         {/* Header avec les boutons de démarrage et de terminaison */}
         <AppHeader
           isRecording={isRecording}
@@ -66,7 +72,7 @@ const styles = StyleSheet.create({
   summaryTableContainer: {
     width: "100%",
     maxWidth: 1000,
-    alignSelf: "center", 
+    alignSelf: "center",
     paddingVertical: 20,
   },
 });

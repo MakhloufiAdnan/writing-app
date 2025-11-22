@@ -6,6 +6,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
+import { MelodySelector } from './MelodySelector';
 
 export function MainLayout() {
   // Hook moderne pour récupérer les dimensions de l’écran
@@ -28,12 +29,9 @@ export function MainLayout() {
           </Text>
         </View>
 
-        {/* Zone 2 */}
+        {/* Zone 2 : Sélection des mélodies (juste sous la zone 1) */}
         <View style={styles.zone}>
-          <Text style={styles.zoneTitle}>Zone 2</Text>
-          <Text style={styles.zoneText}>
-            Contenu à définir (par exemple : métriques cinétiques).
-          </Text>
+          <MelodySelector />
         </View>
 
         {/* Zone 3 */}

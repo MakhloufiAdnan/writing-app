@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
+import type { WritingAudioPort } from "../models/audio";
 import { computeMetrics, type Point, type Stroke } from "../models/metrics";
-import { melodyPlayer } from "../models/melodyPlayer";
 import type { WritingMetrics } from "../models/types";
 
 interface WritingAreaProps {
@@ -17,19 +17,7 @@ interface WritingAreaProps {
   readonly metrics: WritingMetrics;
   readonly onMetricsChange: (metrics: WritingMetrics) => void;
   readonly selectedMelodyId: string;
-}
-
-/** Fonctions async hors du composant (Sonar + lisibilité) */
-async function stopAndUnloadSound() {
-  await melodyPlayer.stop();
-}
-
-async function pauseSound() {
-  await melodyPlayer.pause();
-}
-
-async function updatePlaybackRate(speedPxPerSec: number) {
-  await melodyPlayer.updateRateForSpeed(speedPxPerSec);
+  readonly audio: WritingAudioPort;
 }
 
 export function WritingArea({
@@ -37,6 +25,7 @@ export function WritingArea({
   metrics: _metrics,
   onMetricsChange,
   selectedMelodyId,
+  audio,
 }: WritingAreaProps) {
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [canvasSize, setCanvasSize] = useState({
@@ -47,16 +36,15 @@ export function WritingArea({
   const strokesRef = useRef<Stroke[]>([]);
   const lastPointRef = useRef<Point | null>(null);
 
-  // Pour savoir si on vient d'entrer en mode enregistrement
   const prevSelectedIdRef = useRef<string | null>(selectedMelodyId);
   const prevIsRecordingRef = useRef<boolean>(isRecording);
 
   // Nettoyage du son à la destruction
   useEffect(() => {
     return () => {
-      void stopAndUnloadSound();
+      void audio.stop();
     };
-  }, []);
+  }, [audio]);
 
   // Réinitialise les tracés au démarrage / met en pause au stop
   useEffect(() => {
@@ -65,9 +53,9 @@ export function WritingArea({
       strokesRef.current = [];
       lastPointRef.current = null;
     } else {
-      void pauseSound();
+      void audio.pause();
     }
-  }, [isRecording]);
+  }, [isRecording, audio]);
 
   /**
    * Gère :
@@ -78,27 +66,24 @@ export function WritingArea({
     const prevSelectedId = prevSelectedIdRef.current;
     const prevIsRecording = prevIsRecordingRef.current;
 
-    // 1) On vient de cliquer sur 'Démarrer' → couper toute musique en cours (pré-écoute)
+    // On vient de cliquer sur "Démarrer" → couper toute musique en cours (pré-écoute)
     if (!prevIsRecording && isRecording) {
-      void stopAndUnloadSound();
+      void audio.stop();
     }
 
-    // 2) On est déjà en train d'écrire et on change de mélodie → lancer la nouvelle
+    // On écrit déjà et on change de mélodie → lancer la nouvelle
     if (
       isRecording &&
       selectedMelodyId &&
       prevSelectedId &&
       selectedMelodyId !== prevSelectedId
     ) {
-      void melodyPlayer.play(selectedMelodyId, {
-        loop: true,
-        volume: 0.8,
-      });
+      void audio.playLoop(selectedMelodyId);
     }
 
     prevSelectedIdRef.current = selectedMelodyId;
     prevIsRecordingRef.current = isRecording;
-  }, [selectedMelodyId, isRecording]);
+  }, [selectedMelodyId, isRecording, audio]);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -126,12 +111,9 @@ export function WritingArea({
     setStrokes(newStrokes);
     lastPointRef.current = point;
 
-    // La musique ne démarre qu'au premier trait, pas au clic sur 'Démarrer'
+    // La musique ne démarre qu'au premier trait, pas au clic sur "Démarrer"
     if (selectedMelodyId) {
-      void melodyPlayer.play(selectedMelodyId, {
-        loop: true,
-        volume: 0.8,
-      });
+      void audio.playLoop(selectedMelodyId);
     }
 
     const newMetrics = computeMetrics(newStrokes);
@@ -172,7 +154,7 @@ export function WritingArea({
       if (dtMs > 0) {
         const dist = Math.hypot(dx, dy);
         const speedPxPerSec = (dist / dtMs) * 1000;
-        void updatePlaybackRate(speedPxPerSec);
+        void audio.updateRate(speedPxPerSec);
       }
     }
     lastPointRef.current = point;
@@ -188,7 +170,7 @@ export function WritingArea({
     }
 
     lastPointRef.current = null;
-    void pauseSound();
+    void audio.pause();
 
     const newMetrics = computeMetrics(strokesRef.current);
     onMetricsChange(newMetrics);

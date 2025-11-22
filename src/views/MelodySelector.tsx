@@ -8,12 +8,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import type { WritingAudioPort } from "../models/audio";
 import { MELODIES, type Melody } from "../models/melodies";
-import { melodyPlayer } from "../models/melodyPlayer";
 
 interface MelodySelectorProps {
   readonly selectedId?: string;
   readonly onChangeSelected?: (id: string) => void;
+  readonly audio: WritingAudioPort;
 }
 
 /**
@@ -25,6 +26,7 @@ interface MelodySelectorProps {
 export function MelodySelector({
   selectedId: externalSelectedId,
   onChangeSelected,
+  audio,
 }: MelodySelectorProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
@@ -58,14 +60,14 @@ export function MelodySelector({
 
     // Si on reclique sur la même → on arrête le son
     if (playingId === melody.id) {
-      await melodyPlayer.stop();
+      await audio.stop();
       setPlayingId(null);
       return;
     }
 
     // Sinon on lance un aperçu (non bouclé)
     try {
-      await melodyPlayer.play(melody.id, { loop: false, volume: 1 });
+      await audio.playPreview(melody.id);
       setPlayingId(melody.id);
     } catch {
       setPlayingId(null);

@@ -2,10 +2,11 @@ import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { useWritingController } from "../src/controllers/useWritingController";
+import { melodyAudioPort } from "../src/models/melodyPlayer";
 import { AppHeader } from "../src/views/AppHeader";
 import { MainLayout } from "../src/views/MainLayout";
 import { SummaryTable } from "../src/views/SummaryTable";
-import { useWritingController } from "../src/controllers/useWritingController";
 
 export default function HomeScreen() {
   const {
@@ -31,6 +32,7 @@ export default function HomeScreen() {
           selectedMelodyId={selectedMelodyId}
           onChangeSelectedMelody={changeMelody}
           onMetricsChange={updateMetrics}
+          audio={melodyAudioPort}
         />
 
         <View style={styles.summaryTableContainer}>

@@ -18,14 +18,14 @@ export const MELODIES: readonly Melody[] = [
     id: 'melody1',
     label: 'Piano doux',
     description: 'Calme et rassurant',
-    audio: require('../../assets/audios/cozy-warm-relaxing-piano-275983.mp3'),
+    audio: require('../../assets/audios/piano.mp3'),
     image: require('../../assets/images/ai-generated-9226588_640.jpg'),
   },
   {
     id: 'melody2',
     label: 'Xylophone',
     description: 'Léger et joyeux',
-    audio: require('../../assets/audios/emotional-soft-piano-inspiring-438654.mp3'),
+    audio: require('../../assets/audios/funMelody.mp3'),
     image: require('../../assets/images/easter-bunnies-6082603_640.jpg'),
   },
   {
@@ -53,7 +53,7 @@ export const MELODIES: readonly Melody[] = [
     id: 'melody6',
     label: 'Étoiles',
     description: 'Onirique et doux',
-    audio: require('../../assets/audios/funny-holidays-281237.mp3'),
+    audio: require('../../assets/audios/emotional-soft-piano-inspiring-438654.mp3'),
     image: require('../../assets/images/musicians-7133408_640.png'),
   },
 ];

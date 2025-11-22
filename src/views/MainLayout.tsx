@@ -5,11 +5,12 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import type { WritingAudioPort } from "../models/audio";
+import type { WritingMetrics } from "../models/types";
 import { KinematicMetrics } from "./KinematicMetrics";
 import { KineticMetrics } from "./KineticMetrics";
 import { MelodySelector } from "./MelodySelector";
 import { WritingArea } from "./WritingArea";
-import type { WritingMetrics } from "../models/types";
 
 interface MainLayoutProps {
   readonly metrics: WritingMetrics;
@@ -17,6 +18,7 @@ interface MainLayoutProps {
   readonly selectedMelodyId: string;
   readonly onChangeSelectedMelody: (id: string) => void;
   readonly onMetricsChange: (metrics: WritingMetrics) => void;
+  readonly audio: WritingAudioPort;
 }
 
 /**
@@ -32,12 +34,13 @@ export function MainLayout({
   selectedMelodyId,
   onChangeSelectedMelody,
   onMetricsChange,
+  audio,
 }: MainLayoutProps) {
   const { width, height } = useWindowDimensions();
   const isTablet = width >= 768;
   const isPortrait = height >= width;
-
-  // En portrait sur téléphone → zone haute (≈ 2× largeur)
+  
+  // En portrait sur téléphone → zone haute (≈ 2× largeur
   let zone1Height: number;
 
   if (isTablet) {
@@ -69,6 +72,7 @@ export function MainLayout({
               metrics={metrics}
               onMetricsChange={onMetricsChange}
               selectedMelodyId={selectedMelodyId}
+              audio={audio}
             />
           </View>
         </View>
@@ -79,6 +83,7 @@ export function MainLayout({
             <MelodySelector
               selectedId={selectedMelodyId}
               onChangeSelected={onChangeSelectedMelody}
+              audio={audio}
             />
           </View>
         </View>

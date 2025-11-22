@@ -1,4 +1,5 @@
 import { Audio } from "expo-av";
+import type { WritingAudioPort } from "./audio";
 import { getMelodyById } from "./melodies";
 
 type SoundInstance = Audio.Sound;
@@ -91,3 +92,29 @@ class MelodyPlayer {
 }
 
 export const melodyPlayer = new MelodyPlayer();
+
+/**
+ * Adaptateur concret qui implémente l’interface WritingAudioPort
+ * et repose sur MelodyPlayer.
+ */
+export const melodyAudioPort: WritingAudioPort = {
+  async playLoop(melodyId: string) {
+    await melodyPlayer.play(melodyId, { loop: true, volume: 0.8 });
+  },
+
+  async playPreview(melodyId: string) {
+    await melodyPlayer.play(melodyId, { loop: false, volume: 1 });
+  },
+
+  async updateRate(speedPxPerSec: number) {
+    await melodyPlayer.updateRateForSpeed(speedPxPerSec);
+  },
+
+  async pause() {
+    await melodyPlayer.pause();
+  },
+
+  async stop() {
+    await melodyPlayer.stop();
+  },
+};

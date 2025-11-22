@@ -92,7 +92,7 @@ function HeaderButton({
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#eef2ff", 
+    backgroundColor: "#f5ddcfff", 
   },
   container: {
     alignSelf: "center",
@@ -129,6 +129,10 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     backgroundColor: "#f3e6e6ff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    elevation: 3, // ombre Android
     justifyContent: "center",
   },
   buttonBase: {
@@ -136,6 +140,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.1,
+    elevation: 3, // ombre Android
   },
   buttonPrimary: {
     backgroundColor: "#19191aff",

@@ -1,27 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppHeader } from "../src/components/AppHeader";
 import { MainLayout } from "../src/components/MainLayout";
+import { initialMetrics, type WritingMetrics } from "../src/types";
 
 export default function HomeScreen() {
+  // Pour l'instant, j'ai juste des valeurs d'exemple
+  const [metrics] = useState<WritingMetrics>(initialMetrics);
+
   const handleStart = () => {
     console.log("Démarrer cliqué");
-    // plus tard : setIsRecording(true), reset des métriques, etc.
+    // Plus tard : je réinitialise les métriques et je démarre la capture
   };
 
   const handleStop = () => {
     console.log("Terminé cliqué");
-    // plus tard : setIsRecording(false), calcul final, etc.
+    // Plus tard : j'arrête la capture et je fige les métriques
   };
 
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
         <AppHeader onStartPress={handleStart} onStopPress={handleStop} />
-
-        {/* MAIN : les 4 zones */}
-        <MainLayout />
+        <MainLayout metrics={metrics} />
       </View>
     </SafeAreaProvider>
   );
@@ -30,8 +32,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    // on pourrait laisser transparent ici,
-    // le MainLayout gère déjà le fond #f5ddcfff
     backgroundColor: "#f5ddcfff",
   },
 });

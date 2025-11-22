@@ -1,68 +1,15 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
   Image,
+  Pressable,
+  StyleSheet,
+  Text,
   useWindowDimensions,
+  View,
 } from 'react-native';
-import { Audio, type AVPlaybackSource } from 'expo-av';
-import type { ImageSourcePropType } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
-interface Melody {
-  readonly id: string;
-  readonly label: string;
-  readonly description: string;
-  readonly audio: AVPlaybackSource;
-  readonly image: ImageSourcePropType;
-}
-
-const MELODIES: readonly Melody[] = [
-  {
-    id: 'melody1',
-    label: 'Piano doux',
-    description: 'Calme et rassurant',
-    audio: require('../../assets/audios/cozy-warm-relaxing-piano-275983.mp3'),
-    image: require('../../assets/images/ai-generated-9226588_640.jpg'),
-  },
-  {
-    id: 'melody2',
-    label: 'Xylophone',
-    description: 'Léger et joyeux',
-    audio: require('../../assets/audios/emotional-soft-piano-inspiring-438654.mp3'),
-    image: require('../../assets/images/easter-bunnies-6082603_640.jpg'),
-  },
-  {
-    id: 'melody3',
-    label: 'Flûte',
-    description: 'Aérien et fluide',
-    audio: require('../../assets/audios/funny-holidays-281237.mp3'),
-    image: require('../../assets/images/music-1429318_640.jpg'),
-  },
-  {
-    id: 'melody4',
-    label: 'Clochettes',
-    description: 'Magique et scintillant',
-    audio: require('../../assets/audios/game-gaming-minecraft-background-music-377647.mp3'),
-    image: require('../../assets/images/music-6772526_640.png'),
-  },
-  {
-    id: 'melody5',
-    label: 'Synthé',
-    description: 'Moderne et rythmique',
-    audio: require('../../assets/audios/cozy-warm-relaxing-piano-275983.mp3'),
-    image: require('../../assets/images/musician-4207759_640.png'),
-  },
-  {
-    id: 'melody6',
-    label: 'Étoiles',
-    description: 'Onirique et doux',
-    audio: require('../../assets/audios/funny-holidays-281237.mp3'),
-    image: require('../../assets/images/musicians-7133408_640.png'),
-  },
-];
+import { MELODIES, type Melody } from '../melodies';
 
 interface MelodySelectorProps {
   readonly selectedId?: string;
@@ -76,28 +23,23 @@ export function MelodySelector({
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
 
-  // On limite à la même largeur que nos zones (max 1000)
-  const effectiveWidth = Math.min(width, 1000) - 24; // marge approximative
-  // Sur téléphone : 3 colonnes, taille calculée
-  // Sur tablette : taille fixe ~130
+  const effectiveWidth = Math.min(width, 1000) - 24;
   const tileSize = isTablet
     ? 130
     : Math.max(90, Math.floor(effectiveWidth / 3) - 8);
 
   const [internalSelectedId, setInternalSelectedId] = useState<string | null>(
-    externalSelectedId ?? null,
+    externalSelectedId ?? null
   );
   const [playingId, setPlayingId] = useState<string | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Si le parent fournit un selectedId, on le suit
   useEffect(() => {
     if (externalSelectedId !== undefined) {
       setInternalSelectedId(externalSelectedId);
     }
   }, [externalSelectedId]);
 
-  // Nettoyage audio à la destruction
   useEffect(() => {
     return () => {
       if (soundRef.current) {
@@ -106,12 +48,15 @@ export function MelodySelector({
     };
   }, []);
 
-  const handlePress = async (melody: Melody) => {
+  const handlePress = async (melodyId: string) => {
+    const melody = MELODIES.find((m: Melody) => m.id === melodyId);
+    if (!melody) return;
+
     const newSelectedId = melody.id;
     setInternalSelectedId(newSelectedId);
     onChangeSelected?.(newSelectedId);
 
-    // Si on reclique sur celle qui joue déjà → on arrête la lecture
+    // Si on reclique sur la même qui joue → on arrête
     if (playingId === melody.id) {
       if (soundRef.current) {
         try {
@@ -126,7 +71,7 @@ export function MelodySelector({
       return;
     }
 
-    // Sinon on arrête l’éventuel son précédent
+    // Sinon on arrête l’ancien son
     if (soundRef.current) {
       try {
         await soundRef.current.stopAsync();
@@ -137,6 +82,7 @@ export function MelodySelector({
       soundRef.current = null;
     }
 
+    // On joue un aperçu
     try {
       const { sound } = await Audio.Sound.createAsync(melody.audio, {
         shouldPlay: true,
@@ -154,18 +100,18 @@ export function MelodySelector({
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Choisis ta mélodie</Text>
       <Text style={styles.sectionSubtitle}>
-        Appuie sur une image pour écouter et choisir ta mélodie.
+        Appuie sur un carreau pour écouter et choisir le son de l&apos;écriture.
       </Text>
 
       <View style={styles.grid}>
-        {MELODIES.map((melody) => {
+        {MELODIES.map((melody: Melody) => {
           const isSelected = internalSelectedId === melody.id;
           const isPlaying = playingId === melody.id;
 
           return (
             <Pressable
               key={melody.id}
-              onPress={() => void handlePress(melody)}
+              onPress={() => void handlePress(melody.id)}
               style={({ pressed }) => [
                 styles.tile,
                 {
@@ -186,7 +132,7 @@ export function MelodySelector({
                   <Ionicons
                     name={isPlaying ? 'pause' : 'play'}
                     size={16}
-                    color="#ffffff"
+                    color='#ffffff'
                     style={styles.tileIcon}
                   />
                   <Text style={styles.tileFooterText}>
@@ -203,7 +149,7 @@ export function MelodySelector({
         <Text style={styles.selectedText}>
           Mélodie choisie :{' '}
           <Text style={styles.selectedStrong}>
-            {MELODIES.find((m) => m.id === internalSelectedId)?.label ??
+            {MELODIES.find((m: Melody) => m.id === internalSelectedId)?.label ??
               '—'}
           </Text>
         </Text>
@@ -266,7 +212,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingHorizontal: 8,
     paddingVertical: 6,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)', // overlay sombre
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
   },
   tileLabel: {
     fontSize: 13,

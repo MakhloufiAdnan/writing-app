@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import type { WritingMetrics } from '../types';
 
 interface KineticMetricsProps {
@@ -34,19 +34,13 @@ export function KineticMetrics({ metrics }: KineticMetricsProps) {
 
       <View style={styles.list}>
         <MetricRow
-          label="Force appliquée"
+          label='Force appliquée'
           value={`${metrics.appliedForce} %`}
         />
+        <MetricRow label='Temps de pauses' value={`${pauseSeconds} s`} />
+        <MetricRow label='Nombre de pauses' value={`${metrics.pauseCount}`} />
         <MetricRow
-          label="Temps de pauses"
-          value={`${pauseSeconds} s`}
-        />
-        <MetricRow
-          label="Nombre de pauses"
-          value={`${metrics.pauseCount}`}
-        />
-        <MetricRow
-          label="Changements brusques de vitesse"
+          label='Changements brusques de vitesse'
           value={`${metrics.speedChanges}`}
         />
       </View>

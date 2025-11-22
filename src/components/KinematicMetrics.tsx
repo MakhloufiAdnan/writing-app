@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import type { WritingMetrics } from '../types';
 
 interface KinematicMetricsProps {
@@ -15,33 +15,31 @@ export function KinematicMetrics({ metrics }: KinematicMetricsProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Métriques cinématiques</Text>
-      <Text style={styles.subtitle}>
-        Vitesse, direction et forme du tracé.
-      </Text>
+      <Text style={styles.subtitle}>Vitesse, direction et forme du tracé.</Text>
 
       <View style={styles.list}>
         <MetricRow
-          label="Vitesse moyenne"
+          label='Vitesse moyenne'
           value={`${metrics.averageSpeed} px/s`}
         />
         <MetricRow
-          label="Direction principale"
+          label='Direction principale'
           value={`${metrics.direction}°`}
         />
         <MetricRow
-          label="Trajectoire du mouvement"
+          label='Trajectoire du mouvement'
           value={`${metrics.pathLength} mm`}
         />
         <MetricRow
-          label="Corrections d&apos;erreurs"
+          label='Corrections d&apos;erreurs'
           value={`${metrics.corrections}`}
         />
         <MetricRow
-          label="Amplitude du mouvement"
+          label='Amplitude du mouvement'
           value={`${metrics.amplitude} mm`}
         />
         <MetricRow
-          label="Longueur du mot écrit"
+          label='Longueur du mot écrit'
           value={`${metrics.wordLength} mm`}
         />
       </View>

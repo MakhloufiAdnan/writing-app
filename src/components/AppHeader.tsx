@@ -4,29 +4,42 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface AppHeaderProps {
-  readonly onStartPress?: () => void;
-  readonly onStopPress?: () => void;
+  readonly isRecording: boolean;
+  readonly onStartPress: () => void;
+  readonly onStopPress: () => void;
 }
 
-type HeaderButtonVariant = "primary" | "secondary";
+/**
+ * En-tête de l'application :
+ * - Titre H1
+ * - Phrase d'accroche
+ * - Bandeau de navigation avec les boutons Démarrer / Terminé
+ */
+export function AppHeader({
+  isRecording,
+  onStartPress,
+  onStopPress,
+}: AppHeaderProps) {
+  const handleStart = () => {
+    if (!isRecording) {
+      onStartPress();
+    }
+  };
 
-interface HeaderButtonProps {
-  readonly label: string;
-  readonly onPress?: () => void;
-  readonly variant?: HeaderButtonVariant;
-  readonly iconName?: keyof typeof Ionicons.glyphMap;
-}
+  const handleStop = () => {
+    if (isRecording) {
+      onStopPress();
+    }
+  };
 
-export function AppHeader({ onStartPress, onStopPress }: AppHeaderProps) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Bloc titre + accroche */}
+        {/* Titre + phrase d'accroche */}
         <View style={styles.textBlock}>
-          <Text style={styles.title} accessibilityRole="header">
-            Tableau de Bord d&#39;Analyse de l&#39;Écriture
+          <Text style={styles.title}>
+            Tableau de Bord d&apos;Analyse de l&apos;Écriture
           </Text>
-
           <Text style={styles.subtitle}>
             Écris le mot dans la zone et observe les paramètres en temps réel.
           </Text>
@@ -34,144 +47,110 @@ export function AppHeader({ onStartPress, onStopPress }: AppHeaderProps) {
 
         {/* Bandeau de navigation */}
         <View style={styles.navBar}>
-          <HeaderButton
-            label="Démarrer"
-            onPress={onStartPress}
-            variant="primary"
-            iconName="play"
-          />
-          <HeaderButton
-            label="Terminé"
-            onPress={onStopPress}
-            variant="secondary"
-            iconName="stop"
-          />
+          {/* Démarrer */}
+          <Pressable
+            onPress={handleStart}
+            disabled={isRecording}
+            style={({ pressed }) => [
+              styles.controlButton,
+              styles.startButton,
+              isRecording && styles.controlButtonDisabled, // transparence quand non cliquable
+              pressed && !isRecording && styles.controlButtonPressed,
+            ]}
+          >
+            <Ionicons name="play" size={18} color="#ffffff" />
+            <Text style={styles.controlText}>Démarrer</Text>
+          </Pressable>
+
+          {/* Terminé */}
+          <Pressable
+            onPress={handleStop}
+            disabled={!isRecording}
+            style={({ pressed }) => [
+              styles.controlButton,
+              styles.stopButton,
+              !isRecording && styles.controlButtonDisabled, // transparence quand non cliquable
+              pressed && isRecording && styles.controlButtonPressed,
+            ]}
+          >
+            <Ionicons name="stop" size={18} color="#ffffff" />
+            <Text style={styles.controlText}>Terminé</Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
   );
 }
 
-function HeaderButton({
-  label,
-  onPress,
-  variant = "primary",
-  iconName,
-}: HeaderButtonProps) {
-  const isPrimary = variant === "primary";
-
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.buttonBase,
-        isPrimary ? styles.buttonPrimary : styles.buttonSecondary,
-        pressed && styles.buttonPressed,
-      ]}
-    >
-      <View style={styles.buttonContent}>
-        {iconName && (
-          <Ionicons
-            name={iconName}
-            size={16}
-            color={isPrimary ? "#ffffff" : "#f7f8faff"}
-            style={styles.buttonIcon}
-          />
-        )}
-        <Text
-          style={
-            isPrimary ? styles.buttonPrimaryText : styles.buttonSecondaryText
-          }
-        >
-          {label}
-        </Text>
-      </View>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#f5ddcfff", 
+    backgroundColor: "#f5ddcfff",
   },
   container: {
-    alignSelf: "center",
-    width: "100%",
-    maxWidth: 1000, 
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingVertical: 16,
     alignItems: "center",
-    gap: 12,
+    justifyContent: "center",
   },
   textBlock: {
     alignItems: "center",
-    gap: 6,
   },
   title: {
-    fontSize: 22, // "h1" mobile
+    fontSize: 36,
     fontWeight: "700",
     color: "#111827",
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14, // "h3"
+    marginTop: 4,
+    fontSize: 14,
     color: "#4b5563",
     textAlign: "center",
   },
   navBar: {
     flexDirection: "row",
+    marginTop: 16,
     gap: 12,
-    marginTop: 8,
-    maxWidth: 800,
     width: "100%",
-    flexWrap: "wrap",
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#f3e6e6ff",
+    maxWidth: 800,
+    padding:16,
+    borderRadius:8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    elevation: 3, // ombre Android
-    justifyContent: "center",
+    shadowRadius: 4,
+    elevation: 3,
+    justifyContent: "center", 
+    backgroundColor: "#e5e7eb",
   },
-  buttonBase: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 3 },
-    shadowOpacity: 0.1,
-    elevation: 3, // ombre Android
-  },
-  buttonPrimary: {
-    backgroundColor: "#19191aff",
-    borderColor: "#090909ff",
-  },
-  buttonSecondary: {
-    backgroundColor: "#e02d2dff",
-    borderColor: "#fd3807ff",
-  },
-  buttonPressed: {
-    opacity: 0.85,
-  },
-  buttonContent: {
+  controlButton: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+    gap: 6,
   },
-  buttonIcon: {
-    marginRight: 6,
+  startButton: {
+    backgroundColor: "#22c55e",
   },
-  buttonPrimaryText: {
+  stopButton: {
+    backgroundColor: "#ef4444",
+  },
+  controlText: {
     color: "#ffffff",
+    fontSize: 14,
     fontWeight: "600",
-    fontSize: 14,
   },
-  buttonSecondaryText: {
-    color: "#ffffff",
-    fontWeight: "500",
-    fontSize: 14,
+  controlButtonDisabled: {
+    opacity: 0.4, // bouton désactivé → plus transparent
+  },
+  controlButtonPressed: {
+    opacity: 0.7, // effet léger au clic
   },
 });

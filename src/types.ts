@@ -15,18 +15,17 @@ export interface WritingMetrics {
   wordLength: number;     // mm
 }
 
-// Valeurs d'exemple pour voir le rendu (je branche les vraies plus tard)
-export const initialMetrics: WritingMetrics = {
-  appliedForce: 62,
-  pauseTime: 3200,
-  pauseCount: 4,
-  speedChanges: 3,
-  fluidity: 78,
+export const emptyMetrics: WritingMetrics = {
+  appliedForce: 0,
+  pauseTime: 0,
+  pauseCount: 0,
+  speedChanges: 0,
+  fluidity: 100,
 
-  averageSpeed: 115,
-  direction: 8,
-  pathLength: 96,
-  corrections: 2,
-  amplitude: 18,
-  wordLength: 54,
+  averageSpeed: 0,
+  direction: 0,
+  pathLength: 0,
+  corrections: 0,
+  amplitude: 0,
+  wordLength: 0,
 };

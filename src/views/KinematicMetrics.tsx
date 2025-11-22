@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { WritingMetrics } from '../types';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import type { WritingMetrics } from "../models/types";
 
 interface KinematicMetricsProps {
   readonly metrics: WritingMetrics;
@@ -23,27 +23,27 @@ export function KinematicMetrics({ metrics }: KinematicMetricsProps) {
 
       <View style={styles.list}>
         <MetricRow
-          label='Vitesse moyenne'
+          label="Vitesse moyenne"
           value={`${metrics.averageSpeed} px/s`}
         />
         <MetricRow
-          label='Direction principale'
+          label="Direction principale"
           value={`${metrics.direction}°`}
         />
         <MetricRow
-          label='Trajectoire du mouvement'
+          label="Trajectoire du mouvement"
           value={`${metrics.pathLength} mm`}
         />
         <MetricRow
-          label='Corrections d&apos;erreurs'
+          label="Corrections d'erreurs"
           value={`${metrics.corrections}`}
         />
         <MetricRow
-          label='Amplitude du mouvement'
+          label="Amplitude du mouvement"
           value={`${metrics.amplitude} mm`}
         />
         <MetricRow
-          label='Longueur du mot écrit'
+          label="Longueur du mot écrit"
           value={`${metrics.wordLength} mm`}
         />
       </View>
@@ -62,33 +62,33 @@ function MetricRow({ label, value }: MetricRowProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     gap: 8,
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   list: {
     marginTop: 4,
     gap: 4,
   },
   metricRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   metricLabel: {
     fontSize: 13,
-    color: '#4b5563',
+    color: "#4b5563",
   },
   metricValue: {
     fontSize: 13,
-    color: '#111827',
-    fontWeight: '500',
+    color: "#111827",
+    fontWeight: "500",
   },
 });

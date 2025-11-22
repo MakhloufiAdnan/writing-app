@@ -1,59 +1,38 @@
-import React, { useState } from "react";
+import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { AppHeader } from "../src/components/AppHeader";
-import { MainLayout } from "../src/components/MainLayout";
-import { SummaryTable } from "../src/components/SummaryTable";
-import { emptyMetrics, type WritingMetrics } from "../src/types";
 
-/**
- * Écran principal de l'application.
- * Gère l'état global :
- * - isRecording : est-ce que l'on enregistre actuellement ?
- * - metrics : les métriques d'écriture calculées
- * - selectedMelodyId : la mélodie choisie par l'utilisateur
- */
+import { AppHeader } from "../src/views/AppHeader";
+import { MainLayout } from "../src/views/MainLayout";
+import { SummaryTable } from "../src/views/SummaryTable";
+import { useWritingController } from "../src/controllers/useWritingController";
+
 export default function HomeScreen() {
-  const [metrics, setMetrics] = useState<WritingMetrics>(emptyMetrics);
-  const [isRecording, setIsRecording] = useState(false);
-  const [selectedMelodyId, setSelectedMelodyId] = useState<string>("melody1");
-
-  /** L'utilisateur appuie sur "Démarrer" */
-  const handleStart = () => {
-    setIsRecording(true);
-  };
-
-  /** L'utilisateur appuie sur "Terminé" */
-  const handleStop = () => {
-    setIsRecording(false);
-  };
+  const {
+    state: { metrics, isRecording, selectedMelodyId },
+    actions: { startRecording, stopRecording, changeMelody, updateMetrics },
+  } = useWritingController();
 
   return (
     <SafeAreaProvider>
       <ScrollView
         contentContainerStyle={styles.root}
-
-        // Désactiver le scroll pendant l'enregistrement
         scrollEnabled={!isRecording}
       >
-        
-        {/* Header avec les boutons de démarrage et de terminaison */}
         <AppHeader
           isRecording={isRecording}
-          onStartPress={handleStart}
-          onStopPress={handleStop}
+          onStartPress={startRecording}
+          onStopPress={stopRecording}
         />
 
-        {/* Main Layout avec métriques */}
         <MainLayout
           metrics={metrics}
           isRecording={isRecording}
           selectedMelodyId={selectedMelodyId}
-          onChangeSelectedMelody={setSelectedMelodyId}
-          onMetricsChange={setMetrics}
+          onChangeSelectedMelody={changeMelody}
+          onMetricsChange={updateMetrics}
         />
 
-        {/* Zone 5 - Tableau récapitulatif */}
         <View style={styles.summaryTableContainer}>
           <SummaryTable metrics={metrics} />
         </View>

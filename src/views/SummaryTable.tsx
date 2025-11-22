@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import type { WritingMetrics } from "../types";
+import { StyleSheet, Text, View } from "react-native";
+import type { WritingMetrics } from "../models/types";
 
 interface SummaryTableProps {
   readonly metrics: WritingMetrics;
@@ -22,7 +22,9 @@ export function SummaryTable({ metrics }: SummaryTableProps) {
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>Temps de pause</Text>
-            <Text style={styles.tableCell}>{`${pauseSeconds.toFixed(1)} s`}</Text>
+            <Text style={styles.tableCell}>{`${pauseSeconds.toFixed(
+              1
+            )} s`}</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>Nombre de pauses</Text>
@@ -36,7 +38,9 @@ export function SummaryTable({ metrics }: SummaryTableProps) {
           {/* Row for Kinematic Metrics */}
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>Vitesse moyenne</Text>
-            <Text style={styles.tableCell}>{`${metrics.averageSpeed} px/s`}</Text>
+            <Text
+              style={styles.tableCell}
+            >{`${metrics.averageSpeed} px/s`}</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.tableCell}>Direction</Text>

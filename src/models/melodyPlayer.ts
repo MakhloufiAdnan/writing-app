@@ -7,10 +7,7 @@ class MelodyPlayer {
   private sound: SoundInstance | null = null;
   private currentMelodyId: string | null = null;
 
-  async play(
-    melodyId: string,
-    options?: { loop?: boolean; volume?: number }
-  ) {
+  async play(melodyId: string, options?: { loop?: boolean; volume?: number }) {
     const melody = getMelodyById(melodyId);
     if (!melody) return;
 

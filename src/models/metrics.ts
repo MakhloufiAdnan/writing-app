@@ -1,4 +1,4 @@
-import { emptyMetrics, type WritingMetrics } from "./types";
+import { emptyMetrics, type WritingMetrics } from "../models/types";
 
 export type Point = { x: number; y: number; t: number; force?: number };
 export type Stroke = Point[];

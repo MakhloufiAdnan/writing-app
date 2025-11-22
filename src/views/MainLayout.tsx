@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 import {
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
-} from 'react-native';
-import type { WritingMetrics } from '../types';
-import { KinematicMetrics } from './KinematicMetrics';
-import { KineticMetrics } from './KineticMetrics';
-import { MelodySelector } from './MelodySelector';
-import { WritingArea } from './WritingArea';
+} from "react-native";
+import { KinematicMetrics } from "./KinematicMetrics";
+import { KineticMetrics } from "./KineticMetrics";
+import { MelodySelector } from "./MelodySelector";
+import { WritingArea } from "./WritingArea";
+import type { WritingMetrics } from "../models/types";
 
 interface MainLayoutProps {
   readonly metrics: WritingMetrics;
@@ -22,7 +22,7 @@ interface MainLayoutProps {
 /**
  * Disposition des 4 zones dans le main :
  * 1. Zone d'écriture (pleine largeur, hauteur = 40% de la largeur écran)
- * 2. Zone de sélection des mélodies 
+ * 2. Zone de sélection des mélodies
  * 3. Zone métriques cinétiques (gauche en tablette)
  * 4. Zone métriques cinématiques (droite en tablette)
  */
@@ -108,38 +108,38 @@ export function MainLayout({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#f5ddcfff',
+    backgroundColor: "#f5ddcfff",
   },
   container: {
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 12,
   },
   fullWidth: {
-    width: '100%',
+    width: "100%",
     maxWidth: 1000,
   },
   zoneCard: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#f3e6e6ff',
-    shadowColor: '#000',
+    backgroundColor: "#f3e6e6ff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   zoneWriting: {
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
+    alignItems: "stretch",
+    justifyContent: "flex-start",
   },
   metricsRow: {
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 12,
-    alignItems: 'stretch',
+    alignItems: "stretch",
   },
   metricsRowTablet: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   metricsColumn: {
     flex: 1,
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    backgroundColor: '#f3e6e6ff',
-    shadowColor: '#000',
+    backgroundColor: "#f3e6e6ff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

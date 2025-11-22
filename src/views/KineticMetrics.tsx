@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { WritingMetrics } from '../types';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import type { WritingMetrics } from "../models/types";
 
 interface KineticMetricsProps {
   readonly metrics: WritingMetrics;
@@ -18,14 +18,14 @@ interface MetricRowProps {
 export function KineticMetrics({ metrics }: KineticMetricsProps) {
   const pauseSeconds = (metrics.pauseTime / 1000).toFixed(1);
 
-  let fluidityLabel = 'Écriture modérée';
+  let fluidityLabel = "Écriture modérée";
   let fluidityColor = styles.badgeMedium;
 
   if (metrics.fluidity >= 70) {
-    fluidityLabel = 'Écriture fluide';
+    fluidityLabel = "Écriture fluide";
     fluidityColor = styles.badgeGood;
   } else if (metrics.fluidity < 40) {
-    fluidityLabel = 'Écriture saccadée';
+    fluidityLabel = "Écriture saccadée";
     fluidityColor = styles.badgeBad;
   }
 
@@ -38,13 +38,13 @@ export function KineticMetrics({ metrics }: KineticMetricsProps) {
 
       <View style={styles.list}>
         <MetricRow
-          label='Force appliquée'
+          label="Force appliquée"
           value={`${metrics.appliedForce} %`}
         />
-        <MetricRow label='Temps de pauses' value={`${pauseSeconds} s`} />
-        <MetricRow label='Nombre de pauses' value={`${metrics.pauseCount}`} />
+        <MetricRow label="Temps de pauses" value={`${pauseSeconds} s`} />
+        <MetricRow label="Nombre de pauses" value={`${metrics.pauseCount}`} />
         <MetricRow
-          label='Changements brusques de vitesse'
+          label="Changements brusques de vitesse"
           value={`${metrics.speedChanges}`}
         />
       </View>
@@ -73,55 +73,55 @@ function MetricRow({ label, value }: MetricRowProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     gap: 8,
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   list: {
     marginTop: 4,
     gap: 4,
   },
   metricRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   metricLabel: {
     fontSize: 13,
-    color: '#4b5563',
+    color: "#4b5563",
   },
   metricValue: {
     fontSize: 13,
-    color: '#111827',
-    fontWeight: '500',
+    color: "#111827",
+    fontWeight: "500",
   },
   fluidityBlock: {
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: "#e5e7eb",
     gap: 4,
   },
   fluidityLabel: {
     fontSize: 13,
-    color: '#4b5563',
+    color: "#4b5563",
   },
   fluidityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   fluidityValue: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   badgeBase: {
     paddingHorizontal: 10,
@@ -130,16 +130,16 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
   badgeGood: {
-    backgroundColor: '#bbf7d0',
+    backgroundColor: "#bbf7d0",
   },
   badgeMedium: {
-    backgroundColor: '#fee2b3',
+    backgroundColor: "#fee2b3",
   },
   badgeBad: {
-    backgroundColor: '#fecaca',
+    backgroundColor: "#fecaca",
   },
 });

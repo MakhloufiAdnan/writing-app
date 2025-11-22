@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   Pressable,
@@ -7,9 +7,9 @@ import {
   Text,
   useWindowDimensions,
   View,
-} from 'react-native';
-import { MELODIES, type Melody } from '../melodies';
-import { melodyPlayer } from '../melodyPlayer';
+} from "react-native";
+import { MELODIES, type Melody } from "../models/melodies";
+import { melodyPlayer } from "../models/melodyPlayer";
 
 interface MelodySelectorProps {
   readonly selectedId?: string;
@@ -106,13 +106,13 @@ export function MelodySelector({
 
                 <View style={styles.tileFooter}>
                   <Ionicons
-                    name={isPlaying ? 'pause' : 'play'}
+                    name={isPlaying ? "pause" : "play"}
                     size={16}
-                    color='#ffffff'
+                    color="#ffffff"
                     style={styles.tileIcon}
                   />
                   <Text style={styles.tileFooterText}>
-                    {isPlaying ? 'En lecture' : 'Tester'}
+                    {isPlaying ? "En lecture" : "Tester"}
                   </Text>
                 </View>
               </View>
@@ -123,10 +123,10 @@ export function MelodySelector({
 
       {internalSelectedId && (
         <Text style={styles.selectedText}>
-          Mélodie choisie :{' '}
+          Mélodie choisie :{" "}
           <Text style={styles.selectedStrong}>
             {MELODIES.find((m: Melody) => m.id === internalSelectedId)?.label ??
-              '—'}
+              "—"}
           </Text>
         </Text>
       )}
@@ -136,33 +136,33 @@ export function MelodySelector({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     gap: 8,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#111827",
+    textAlign: "center",
   },
   sectionSubtitle: {
     fontSize: 13,
-    color: '#4b5563',
-    textAlign: 'center',
+    color: "#4b5563",
+    textAlign: "center",
     marginBottom: 4,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   tile: {
     margin: 6,
     borderRadius: 16,
-    overflow: 'hidden',
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
+    overflow: "hidden",
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.18,
     shadowRadius: 6,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   tileSelected: {
     borderWidth: 2,
-    borderColor: '#22c55e',
+    borderColor: "#22c55e",
   },
   tilePressed: {
     opacity: 0.9,
@@ -178,47 +178,47 @@ const styles = StyleSheet.create({
   },
   tileImage: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   tileOverlay: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     paddingHorizontal: 8,
     paddingVertical: 6,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    backgroundColor: "rgba(15, 23, 42, 0.55)",
   },
   tileLabel: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#ffffff',
+    fontWeight: "600",
+    color: "#ffffff",
   },
   tileDescription: {
     fontSize: 11,
-    color: '#e5e7eb',
+    color: "#e5e7eb",
   },
   tileFooter: {
     marginTop: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   tileIcon: {
     marginRight: 4,
   },
   tileFooterText: {
     fontSize: 11,
-    color: '#ffffff',
+    color: "#ffffff",
   },
   selectedText: {
     marginTop: 4,
     fontSize: 12,
-    color: '#4b5563',
-    textAlign: 'center',
+    color: "#4b5563",
+    textAlign: "center",
   },
   selectedStrong: {
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
   },
 });

@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+} from "react-native";
+import Svg, { Path } from "react-native-svg";
 
-import { melodyPlayer } from '../melodyPlayer';
-import { computeMetrics, type Point, type Stroke } from '../metrics';
-import type { WritingMetrics } from '../types';
+import { computeMetrics, type Point, type Stroke } from "../models/metrics";
+import { melodyPlayer } from "../models/melodyPlayer";
+import type { WritingMetrics } from "../models/types";
 
 interface WritingAreaProps {
   readonly isRecording: boolean;
@@ -117,7 +117,7 @@ export function WritingArea({
       x: locationX,
       y: locationY,
       t: now,
-      force: typeof force === 'number' ? force : 0.5,
+      force: typeof force === "number" ? force : 0.5,
     };
 
     const newStroke: Stroke = [point];
@@ -151,7 +151,7 @@ export function WritingArea({
       x: locationX,
       y: locationY,
       t: now,
-      force: typeof force === 'number' ? force : 0.5,
+      force: typeof force === "number" ? force : 0.5,
     };
 
     const strokeIndex = strokesRef.current.length - 1;
@@ -195,10 +195,10 @@ export function WritingArea({
   };
 
   const renderPath = (stroke: Stroke) => {
-    if (stroke.length === 0) return '';
+    if (stroke.length === 0) return "";
     return stroke
-      .map((p, index) => `${index === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
-      .join(' ');
+      .map((p, index) => `${index === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+      .join(" ");
   };
 
   return (
@@ -220,7 +220,7 @@ export function WritingArea({
         onResponderTerminate={handleEnd}
       >
         {canvasSize.width > 0 && (
-          <Svg width='100%' height='100%'>
+          <Svg width="100%" height="100%">
             {strokes.map((stroke) => {
               const firstPoint = stroke[0];
               const key = firstPoint
@@ -230,11 +230,11 @@ export function WritingArea({
                 <Path
                   key={key}
                   d={renderPath(stroke)}
-                  stroke='#4f46e5'
+                  stroke="#4f46e5"
                   strokeWidth={4}
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  fill='none'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
                 />
               );
             })}
@@ -255,37 +255,37 @@ export function WritingArea({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
     gap: 6,
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
     padding: 8,
   },
   subtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   canvas: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderStyle: 'dashed',
+    borderColor: "#e5e7eb",
+    borderStyle: "dashed",
     borderRadius: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
+    alignSelf: "stretch",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
     margin: 16,
   },
   helperText: {
     fontSize: 13,
-    color: '#9ca3af',
-    textAlign: 'center',
+    color: "#9ca3af",
+    textAlign: "center",
     paddingHorizontal: 16,
   },
 });

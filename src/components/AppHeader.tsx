@@ -54,7 +54,7 @@ export function AppHeader({
             style={({ pressed }) => [
               styles.controlButton,
               styles.startButton,
-              isRecording && styles.controlButtonDisabled, // transparence quand non cliquable
+              isRecording && styles.controlButtonDisabled,
               pressed && !isRecording && styles.controlButtonPressed,
             ]}
           >
@@ -69,7 +69,7 @@ export function AppHeader({
             style={({ pressed }) => [
               styles.controlButton,
               styles.stopButton,
-              !isRecording && styles.controlButtonDisabled, // transparence quand non cliquable
+              !isRecording && styles.controlButtonDisabled, 
               pressed && isRecording && styles.controlButtonPressed,
             ]}
           >

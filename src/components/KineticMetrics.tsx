@@ -11,6 +11,10 @@ interface MetricRowProps {
   readonly value: string;
 }
 
+/**
+ * Zone 3 : affichage des métriques cinétiques
+ * (force, pauses, changements de vitesse, fluidité)
+ */
 export function KineticMetrics({ metrics }: KineticMetricsProps) {
   const pauseSeconds = (metrics.pauseTime / 1000).toFixed(1);
 

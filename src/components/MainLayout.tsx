@@ -19,6 +19,13 @@ interface MainLayoutProps {
   readonly onMetricsChange: (metrics: WritingMetrics) => void;
 }
 
+/**
+ * Disposition des 4 zones dans le main :
+ * 1. Zone d'écriture (pleine largeur, hauteur = 50% de la largeur écran)
+ * 2. Zone de sélection des mélodies
+ * 3. Zone métriques cinétiques (gauche en tablette)
+ * 4. Zone métriques cinématiques (droite en tablette)
+ */
 export function MainLayout({
   metrics,
   isRecording,

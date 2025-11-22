@@ -1,6 +1,7 @@
 import type { AVPlaybackSource } from "expo-av";
 import type { ImageSourcePropType } from "react-native";
 
+/** Description d'une mélodie disponible dans l'application */
 export interface Melody {
   id: string;
   label: string;
@@ -9,6 +10,9 @@ export interface Melody {
   image: ImageSourcePropType;
 }
 
+/**
+ * Tableau des 6 mélodies, images et descriptions associées.
+ */
 export const MELODIES: readonly Melody[] = [
   {
     id: 'melody1',
@@ -54,6 +58,7 @@ export const MELODIES: readonly Melody[] = [
   },
 ];
 
+/** Récupérer une mélodie par son id */
 export function getMelodyById(id: string | null | undefined) {
   return MELODIES.find((m) => m.id === id);
 }

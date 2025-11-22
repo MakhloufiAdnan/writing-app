@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppHeader } from "../src/components/AppHeader";
 import { MainLayout } from "../src/components/MainLayout";
+import { SummaryTable } from "../src/components/SummaryTable";
 import { emptyMetrics, type WritingMetrics } from "../src/types";
 
 /**
@@ -29,13 +30,15 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaProvider>
-      <View style={styles.root}>
+      <ScrollView contentContainerStyle={styles.root}>
+        {/* Header avec les boutons de démarrage et de terminaison */}
         <AppHeader
           isRecording={isRecording}
           onStartPress={handleStart}
           onStopPress={handleStop}
         />
 
+        {/* Main Layout avec métriques */}
         <MainLayout
           metrics={metrics}
           isRecording={isRecording}
@@ -43,14 +46,27 @@ export default function HomeScreen() {
           onChangeSelectedMelody={setSelectedMelodyId}
           onMetricsChange={setMetrics}
         />
-      </View>
+
+        {/* Zone 5 - Tableau récapitulatif */}
+        <View style={styles.summaryTableContainer}>
+          <SummaryTable metrics={metrics} />
+        </View>
+      </ScrollView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
-    flex: 1,
-    backgroundColor: "#f5ddcfff", 
+    flexGrow: 1,
+    backgroundColor: "#f5ddcfff",
+    paddingHorizontal: 16,
+    paddingTop: 40,
+  },
+  summaryTableContainer: {
+    width: "100%",
+    maxWidth: 1000,
+    alignSelf: "center", 
+    paddingVertical: 20,
   },
 });

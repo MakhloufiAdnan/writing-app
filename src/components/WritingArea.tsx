@@ -1,21 +1,22 @@
-// src/components/WritingArea.tsx
+import { Audio } from "expo-av";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
+  GestureResponderEvent,
+  LayoutChangeEvent,
   StyleSheet,
-  type GestureResponderEvent,
-  type LayoutChangeEvent,
+  Text,
+  View,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { Audio } from "expo-av";
 
-import { emptyMetrics, type WritingMetrics } from "../types";
 import { getMelodyById } from "../melodies";
+import { emptyMetrics, type WritingMetrics } from "../types";
 
+// Définition des types de données
 type Point = { x: number; y: number; t: number; force?: number };
 type Stroke = Point[];
 
+// Définition des props pour la zone d'écriture
 interface WritingAreaProps {
   readonly isRecording: boolean;
   readonly metrics: WritingMetrics;
@@ -23,10 +24,10 @@ interface WritingAreaProps {
   readonly selectedMelodyId: string;
 }
 
-// Conversion approximative pixels → mm (96 dpi)
-const PX_PER_MM = 3.78;
-const SPEED_CHANGE_THRESHOLD = 600; // seuil changement brusque (px/s)
-const PAUSE_THRESHOLD_MS = 150;
+// Constantes de conversion
+const PX_PER_MM = 3.78; // Conversion des pixels en millimètres (approximative pour 96 dpi)
+const SPEED_CHANGE_THRESHOLD = 600; // Seuil pour détecter un changement brusque de vitesse (px/s)
+const PAUSE_THRESHOLD_MS = 150; // Seuil pour considérer une pause entre les traits (ms)
 
 export function WritingArea({
   isRecording,
@@ -34,27 +35,27 @@ export function WritingArea({
   onMetricsChange,
   selectedMelodyId,
 }: WritingAreaProps) {
-  const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [strokes, setStrokes] = useState<Stroke[]>([]); // État des tracés
   const [canvasSize, setCanvasSize] = useState({
     width: 0,
     height: 0,
   });
 
-  const strokesRef = useRef<Stroke[]>([]);
-  const lastPointRef = useRef<Point | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const strokesRef = useRef<Stroke[]>([]); // Référence pour les tracés
+  const lastPointRef = useRef<Point | null>(null); // Référence pour le dernier point touché
+  const soundRef = useRef<Audio.Sound | null>(null); // Référence pour le son
 
-  // Nettoyage du son à la destruction du composant
+  // Nettoyage du son lors de la destruction du composant
   useEffect(() => {
     return () => {
       void stopAndUnloadSound();
     };
   }, []);
 
-  // Quand on démarre un nouvel enregistrement, on efface le tracé
+  // Efface les tracés lorsque l'enregistrement commence
   useEffect(() => {
     if (isRecording) {
-      setStrokes([]);
+      setStrokes([]); // Réinitialise les tracés
       strokesRef.current = [];
       lastPointRef.current = null;
     } else {
@@ -62,7 +63,7 @@ export function WritingArea({
     }
   }, [isRecording]);
 
-  // Si on change de mélodie, on coupe le son courant
+  // Arrête et décharge le son courant lorsque la mélodie change
   useEffect(() => {
     void stopAndUnloadSound();
   }, [selectedMelodyId]);
@@ -71,10 +72,10 @@ export function WritingArea({
   async function stopAndUnloadSound() {
     if (soundRef.current) {
       try {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
+        await soundRef.current.stopAsync(); // Arrête le son
+        await soundRef.current.unloadAsync(); // Décharge le son
       } catch {
-        // ignore
+        // Ignore les erreurs
       }
       soundRef.current = null;
     }
@@ -86,7 +87,7 @@ export function WritingArea({
       try {
         await soundRef.current.pauseAsync();
       } catch {
-        // ignore
+        // Ignore les erreurs
       }
     }
   }
@@ -99,15 +100,13 @@ export function WritingArea({
   async function ensureSoundPlayingForCurrentMelody() {
     const melody = getMelodyById(selectedMelodyId);
 
-    if (melody === undefined || melody === null) {
-      return;
+    if (!melody) {
+      return; // Si la mélodie est invalide, on arrête ici
     }
 
     try {
-      const existingSound = soundRef.current;
-
-      if (existingSound) {
-        await existingSound.playAsync();
+      if (soundRef.current) {
+        await soundRef.current.playAsync();
       } else {
         const { sound } = await Audio.Sound.createAsync(melody.audio, {
           isLooping: true,
@@ -117,7 +116,7 @@ export function WritingArea({
         soundRef.current = sound;
       }
     } catch (error) {
-      console.warn("Erreur son écriture", error);
+      console.warn("Erreur lors de la lecture du son", error);
     }
   }
 
@@ -137,17 +136,17 @@ export function WritingArea({
         shouldCorrectPitch: true,
       });
     } catch {
-      // ignore
+      // Ignore les erreurs
     }
   }
 
-  /** Gestion du layout : on récupère la taille réelle du canvas */
+  /** Gestion du layout : récupère la taille réelle du canvas */
   const handleLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
     setCanvasSize({ width, height });
   };
 
-  /** L'utilisateur pose le doigt / stylet sur la zone */
+  /** L'utilisateur commence à écrire sur le canvas */
   const handleStart = (e: GestureResponderEvent) => {
     if (!isRecording) {
       return;
@@ -174,7 +173,7 @@ export function WritingArea({
     onMetricsChange(newMetrics);
   };
 
-  /** L'utilisateur déplace le doigt / stylet */
+  /** L'utilisateur déplace son doigt sur le canvas */
   const handleMove = (e: GestureResponderEvent) => {
     if (!isRecording || strokesRef.current.length === 0) {
       return;
@@ -217,7 +216,7 @@ export function WritingArea({
     onMetricsChange(newMetrics);
   };
 
-  /** L'utilisateur lève le doigt / stylet */
+  /** L'utilisateur arrête d'écrire */
   const handleEnd = () => {
     if (!isRecording) {
       return;
@@ -230,7 +229,7 @@ export function WritingArea({
     onMetricsChange(newMetrics);
   };
 
-  /** Génère une path SVG à partir d'un stroke */
+  /** Génère un chemin SVG à partir d'un stroke */
   const renderPath = (stroke: Stroke) => {
     if (stroke.length === 0) return "";
     return stroke
@@ -290,14 +289,15 @@ export function WritingArea({
 }
 
 /* ===========================================================
-   Helpers de calcul des métriques
+   Calculs des métriques
    =========================================================== */
 
+// Fonction pour restreindre une valeur dans une plage donnée
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-/** Calcule le temps total de pause et le nombre de pauses entre les traits */
+// Calcule le temps total de pause et le nombre de pauses entre les traits
 function computePauseStats(strokes: Stroke[]) {
   let totalPauseMs = 0;
   let pauseCount = 0;
@@ -305,7 +305,7 @@ function computePauseStats(strokes: Stroke[]) {
   for (let i = 0; i < strokes.length - 1; i++) {
     const currentStroke = strokes[i];
     const nextStroke = strokes[i + 1];
-    const lastPoint = currentStroke[currentStroke.length - 1];
+    const lastPoint = currentStroke.at(-1);
     const firstNext = nextStroke[0];
 
     if (!lastPoint || !firstNext) continue;
@@ -320,7 +320,7 @@ function computePauseStats(strokes: Stroke[]) {
   return { totalPauseMs, pauseCount };
 }
 
-/** Calcul de la distance totale, des vitesses et des changements brusques de vitesse */
+// Calcul des vitesses, de la distance totale et des changements brusques de vitesse
 function computeSpeedStats(strokes: Stroke[]) {
   let totalDistance = 0;
   const speeds: number[] = [];
@@ -357,7 +357,7 @@ function computeSpeedStats(strokes: Stroke[]) {
   return { totalDistance, speeds, suddenChanges };
 }
 
-/** Boîte englobante des points (pour amplitude & longueur du mot) */
+// Calcule la boîte englobante des points pour l'amplitude et la longueur du mot
 function computeBoundingBox(points: Point[]) {
   const xs = points.map((p) => p.x);
   const ys = points.map((p) => p.y);
@@ -370,25 +370,21 @@ function computeBoundingBox(points: Point[]) {
   };
 }
 
-/** Force moyenne à partir de la pression */
+// Calcule la force moyenne à partir de la pression
 function computeAverageForce(points: Point[]): number {
   const forces = points
     .map((p) => p.force)
-    .filter(
-      (f): f is number => typeof f === "number" && !Number.isNaN(f),
-    );
+    .filter((f): f is number => typeof f === "number" && !Number.isNaN(f));
 
   if (forces.length === 0) {
     return 0;
   }
 
-  const avgForce =
-    forces.reduce((sum, f) => sum + f, 0) / forces.length;
-
+  const avgForce = forces.reduce((sum, f) => sum + f, 0) / forces.length;
   return Math.round(avgForce * 100);
 }
 
-/** Corrections = changements de direction brusques (angle > 90°) */
+// Calcule les corrections (changements brusques de direction)
 function computeCorrections(strokes: Stroke[]) {
   let corrections = 0;
 
@@ -415,49 +411,46 @@ function computeCorrections(strokes: Stroke[]) {
   return corrections;
 }
 
-/**
- * Calcul complet des métriques :
- * - Combine les aides ci-dessus
- * - Calcule une fluidité basée sur :
- *   longueur, pauses, temps de pause, régularité de vitesse, vitesse globale
- */
+// Calcule toutes les métriques (fluidité, vitesse, pauses, etc.)
 function computeMetrics(strokes: Stroke[]): WritingMetrics {
   const allPoints = strokes.flat();
   if (allPoints.length < 2) {
-    return { ...emptyMetrics };
+    return { ...emptyMetrics }; // Retourne des métriques vides si pas assez de points
   }
 
   const { totalPauseMs, pauseCount } = computePauseStats(strokes);
-  const { totalDistance, speeds, suddenChanges } =
-    computeSpeedStats(strokes);
+  const { totalDistance, speeds, suddenChanges } = computeSpeedStats(strokes);
 
   const firstPoint = allPoints[0];
-  const lastPoint = allPoints[allPoints.length - 1];
+  const lastPoint = allPoints.at(-1); // Utilise `.at(-1)` pour obtenir le dernier point
+
+  if (!lastPoint) {
+    return { ...emptyMetrics }; // Retourne des métriques vides si le dernier point est manquant
+  }
 
   const totalTimeMs = lastPoint.t - firstPoint.t;
   const effectiveDrawingMs = Math.max(0, totalTimeMs - totalPauseMs);
   const durationSec = Math.max(0.1, effectiveDrawingMs / 1000);
 
-  // Vitesse moyenne pendant le mouvement
   const averageSpeed = totalDistance / durationSec;
 
-  // Longueurs en mm
   const pathLengthMm = totalDistance / PX_PER_MM;
   const { minX, maxX, minY, maxY } = computeBoundingBox(allPoints);
   const wordLengthMm = (maxX - minX) / PX_PER_MM;
   const amplitudeMm = (maxY - minY) / PX_PER_MM;
 
-  // Sous-scores pour la fluidité
   const pauseRatio = totalTimeMs > 0 ? totalPauseMs / totalTimeMs : 0;
-  const pauseTimeScore = 1 - clamp(pauseRatio / 0.5, 0, 1); // si 50% du temps en pause → score ≈ 0
-  const pauseCountScore = 1 - clamp(pauseCount / 6, 0, 1);   // à partir de ~6 pauses → saccadé
-  const lengthScore = clamp(pathLengthMm / 20, 0, 1);        // < 20 mm : pénalisé
+  const pauseTimeScore = 1 - clamp(pauseRatio / 0.5, 0, 1);
+  const pauseCountScore = 1 - clamp(pauseCount / 6, 0, 1);
+  const lengthScore = clamp(pathLengthMm / 20, 0, 1);
   let smoothnessScore = 1;
+
   if (speeds.length > 1) {
     const changeRate = suddenChanges / speeds.length;
-    smoothnessScore = 1 - clamp(changeRate / 0.3, 0, 1);     // >30% segments brusques → faible
+    smoothnessScore = 1 - clamp(changeRate / 0.3, 0, 1);
   }
-  const speedScore = clamp(averageSpeed / 800, 0, 1);        // très lent → score faible
+
+  const speedScore = clamp(averageSpeed / 800, 0, 1);
 
   const fluidityScore =
     0.35 * smoothnessScore +
@@ -472,8 +465,7 @@ function computeMetrics(strokes: Stroke[]): WritingMetrics {
 
   const dxGlobal = lastPoint.x - firstPoint.x;
   const dyGlobal = lastPoint.y - firstPoint.y;
-  const direction =
-    (Math.atan2(dyGlobal, dxGlobal) * 180) / Math.PI;
+  const direction = (Math.atan2(dyGlobal, dxGlobal) * 180) / Math.PI;
 
   const corrections = computeCorrections(strokes);
 
@@ -502,7 +494,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#111827",
-    padding:8,
+    padding: 8,
   },
   subtitle: {
     fontSize: 12,

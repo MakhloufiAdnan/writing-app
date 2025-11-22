@@ -11,6 +11,10 @@ interface MetricRowProps {
   readonly value: string;
 }
 
+/**
+ * Zone 4 : affichage des métriques cinématiques
+ * (vitesse, direction, trajectoire, corrections, etc.)
+ */
 export function KinematicMetrics({ metrics }: KinematicMetricsProps) {
   return (
     <View style={styles.container}>

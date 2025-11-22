@@ -16,6 +16,12 @@ interface MelodySelectorProps {
   readonly onChangeSelected?: (id: string) => void;
 }
 
+/**
+ * Zone 2 : sélection des 6 mélodies.
+ * - Affiche des carreaux (2x3 en phone, grille en tablette)
+ * - Permet de tester un son en appuyant sur un carreau
+ * - Le carreau sélectionné a un contour vert
+ */
 export function MelodySelector({
   selectedId: externalSelectedId,
   onChangeSelected,
@@ -23,6 +29,7 @@ export function MelodySelector({
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
 
+  // Calcul d'une taille de carreau responsive
   const effectiveWidth = Math.min(width, 1000) - 24;
   const tileSize = isTablet
     ? 130
@@ -34,12 +41,14 @@ export function MelodySelector({
   const [playingId, setPlayingId] = useState<string | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
 
+  // Sync avec l'extérieur si le parent contrôle la sélection
   useEffect(() => {
     if (externalSelectedId !== undefined) {
       setInternalSelectedId(externalSelectedId);
     }
   }, [externalSelectedId]);
 
+  // Nettoyage du son à la destruction
   useEffect(() => {
     return () => {
       if (soundRef.current) {
@@ -52,6 +61,7 @@ export function MelodySelector({
     const melody = MELODIES.find((m: Melody) => m.id === melodyId);
     if (!melody) return;
 
+    // Mise à jour de la sélection
     const newSelectedId = melody.id;
     setInternalSelectedId(newSelectedId);
     onChangeSelected?.(newSelectedId);

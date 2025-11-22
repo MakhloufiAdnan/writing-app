@@ -1,27 +1,28 @@
+/** Toutes les métriques affichés dans le tableau de bord */
 export interface WritingMetrics {
   // Cinétiques
-  appliedForce: number;   // 0–100 (%)
-  pauseTime: number;      // ms
-  pauseCount: number;
-  speedChanges: number;
-  fluidity: number;       // 0–100
+  appliedForce: number;   // Force moyenne appliquée (0–100)
+  pauseTime: number;      // Temps total de pause en ms
+  pauseCount: number;     // Nombre de pauses détectées
+  speedChanges: number;   // Changements brusques de vitesse
+  fluidity: number;       // Score de fluidité 0–100
 
   // Cinématiques
-  averageSpeed: number;   // px/s
-  direction: number;      // degrés
-  pathLength: number;     // mm
-  corrections: number;
-  amplitude: number;      // mm
-  wordLength: number;     // mm
+  averageSpeed: number;   // Vitesse moyenne (px/s)
+  direction: number;      // Direction globale du tracé (en degrés)
+  pathLength: number;     // Longueur du tracé (mm)
+  corrections: number;    // Nombre de corrections (changements de direction brusques)
+  amplitude: number;      // Amplitude verticale (mm)
+  wordLength: number;     // Longueur du mot écrit (mm)
 }
 
+/** Métriques initiales (tout à zéro) */
 export const emptyMetrics: WritingMetrics = {
   appliedForce: 0,
   pauseTime: 0,
   pauseCount: 0,
   speedChanges: 0,
-  fluidity: 100,
-
+  fluidity: 0,
   averageSpeed: 0,
   direction: 0,
   pathLength: 0,

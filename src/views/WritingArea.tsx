@@ -1,3 +1,6 @@
+// src/views/WritingArea.tsx
+// Zone de dessin : capture les gestes, calcule les métriques et pilote l'audio.
+
 import React, { useEffect, useRef, useState } from "react";
 import {
   GestureResponderEvent,
@@ -13,17 +16,24 @@ import { computeMetrics, type Point, type Stroke } from "../models/metrics";
 import type { WritingMetrics } from "../models/types";
 import { COLORS } from "../theme";
 
+/** Intervalle minimal entre deux recalculs de métriques pendant le mouvement (en ms) */
+const METRICS_UPDATE_INTERVAL_MS = 50;
+
 interface WritingAreaProps {
   readonly isRecording: boolean;
-  readonly metrics: WritingMetrics;
   readonly onMetricsChange: (metrics: WritingMetrics) => void;
   readonly selectedMelodyId: string;
   readonly audio: WritingAudioPort;
 }
 
+/**
+ * Zone d'écriture :
+ * - dessine les traits de l'utilisateur
+ * - calcule les métriques en temps quasi réel
+ * - pilote l'audio en fonction des mouvements
+ */
 export function WritingArea({
   isRecording,
-  metrics: _metrics,
   onMetricsChange,
   selectedMelodyId,
   audio,
@@ -34,13 +44,16 @@ export function WritingArea({
     height: 0,
   });
 
+  // Références mutables pour éviter les rerenders inutiles dans les handlers
   const strokesRef = useRef<Stroke[]>([]);
   const lastPointRef = useRef<Point | null>(null);
+  const lastMetricsUpdateRef = useRef<number>(0);
 
+  // Pour détecter les changements de mélodie / d'état d'enregistrement
   const prevSelectedIdRef = useRef<string | null>(selectedMelodyId);
   const prevIsRecordingRef = useRef<boolean>(isRecording);
 
-  // Nettoyage du son à la destruction
+  // Nettoyage du son à la destruction du composant
   useEffect(() => {
     return () => {
       void audio.stop();
@@ -53,6 +66,7 @@ export function WritingArea({
       setStrokes([]);
       strokesRef.current = [];
       lastPointRef.current = null;
+      lastMetricsUpdateRef.current = 0;
     } else {
       void audio.pause();
     }
@@ -61,7 +75,7 @@ export function WritingArea({
   /**
    * Gère :
    * - l'arrêt de toute musique quand on passe en mode enregistrement (pour couper la pré-écoute)
-   * - le changement de mélodie pendant l'écriture (switch en douceur)
+   * - le changement de mélodie pendant l'écriture (si jamais on l'autorisait plus tard)
    */
   useEffect(() => {
     const prevSelectedId = prevSelectedIdRef.current;
@@ -72,7 +86,8 @@ export function WritingArea({
       void audio.stop();
     }
 
-    // On écrit déjà et on change de mélodie → lancer la nouvelle
+    // (Actuellement, la mélodie est verrouillée pendant l'écriture,
+    // donc ce bloc ne sera pas déclenché, mais il est prêt si on change la règle plus tard.)
     if (
       isRecording &&
       selectedMelodyId &&
@@ -103,6 +118,7 @@ export function WritingArea({
       x: locationX,
       y: locationY,
       t: now,
+      // Certains devices ne fournissent pas de force → valeur par défaut 0.5
       force: typeof force === "number" ? force : 0.5,
     };
 
@@ -119,6 +135,7 @@ export function WritingArea({
 
     const newMetrics = computeMetrics(newStrokes);
     onMetricsChange(newMetrics);
+    lastMetricsUpdateRef.current = now;
   };
 
   /** Doigt qui bouge */
@@ -146,6 +163,7 @@ export function WritingArea({
     strokesRef.current = newStrokes;
     setStrokes(newStrokes);
 
+    // Vitesse instantanée → ajuste la vitesse de lecture de l'audio
     const last = lastPointRef.current;
     if (last) {
       const dx = point.x - last.x;
@@ -160,8 +178,13 @@ export function WritingArea({
     }
     lastPointRef.current = point;
 
-    const newMetrics = computeMetrics(newStrokes);
-    onMetricsChange(newMetrics);
+    // Throttle des métriques pour éviter les recalculs excessifs
+    const lastUpdate = lastMetricsUpdateRef.current;
+    if (!lastUpdate || now - lastUpdate >= METRICS_UPDATE_INTERVAL_MS) {
+      const newMetrics = computeMetrics(newStrokes);
+      onMetricsChange(newMetrics);
+      lastMetricsUpdateRef.current = now;
+    }
   };
 
   /** Doigt levé */
@@ -175,6 +198,7 @@ export function WritingArea({
 
     const newMetrics = computeMetrics(strokesRef.current);
     onMetricsChange(newMetrics);
+    lastMetricsUpdateRef.current = 0;
   };
 
   const renderPath = (stroke: Stroke) => {
@@ -213,7 +237,7 @@ export function WritingArea({
                 <Path
                   key={key}
                   d={renderPath(stroke)}
-                  stroke="#120c86ff"
+                  stroke={COLORS.accentBlue}
                   strokeWidth={4}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -249,7 +273,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
-    color: "#6b7280",
+    color: COLORS.textSecondary,
   },
   canvas: {
     marginTop: 8,
@@ -257,7 +281,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderStyle: "dashed",
     borderRadius: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     flex: 1,
     alignSelf: "stretch",
     justifyContent: "center",
@@ -267,7 +291,7 @@ const styles = StyleSheet.create({
   },
   helperText: {
     fontSize: 13,
-    color: "#9ca3af",
+    color: COLORS.muted,
     textAlign: "center",
     paddingHorizontal: 16,
   },

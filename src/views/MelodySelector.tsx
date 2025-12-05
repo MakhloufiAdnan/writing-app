@@ -1,3 +1,7 @@
+// src/views/MelodySelector.tsx
+// Sélecteur de mélodies : grille de 6 tuiles avec pré-écoute.
+// IMPORTANT : la sélection est VERROUILLÉE pendant l'écriture (isRecording).
+
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
@@ -8,6 +12,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+
 import type { WritingAudioPort } from "../models/audio";
 import { MELODIES, type Melody } from "../models/melodies";
 import { COLORS } from "../theme";
@@ -16,18 +21,20 @@ interface MelodySelectorProps {
   readonly selectedId?: string;
   readonly onChangeSelected?: (id: string) => void;
   readonly audio: WritingAudioPort;
+  /** Si true, la sélection est verrouillée (pas de clic ni de pré-écoute) */
+  readonly isRecording: boolean;
 }
 
 /**
  * Zone 2 : sélection des 6 mélodies.
- * - Affiche des carreaux (2x3 en phone, grille en tablette)
- * - Permet de tester un son en appuyant sur un carreau
- * - Le carreau sélectionné a un contour vert
+ * - Quand isRecording === false : pré-écoute + changement de sélection autorisés.
+ * - Quand isRecording === true : la grille est verrouillée pour ne pas fausser les métriques.
  */
 export function MelodySelector({
   selectedId: externalSelectedId,
   onChangeSelected,
   audio,
+  isRecording,
 }: MelodySelectorProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
@@ -50,7 +57,19 @@ export function MelodySelector({
     }
   }, [externalSelectedId]);
 
+  // Si on démarre l'enregistrement, on nettoie l'état de pré-écoute
+  useEffect(() => {
+    if (isRecording && playingId !== null) {
+      setPlayingId(null);
+    }
+  }, [isRecording, playingId]);
+
   const handlePress = async (melodyId: string) => {
+    // 🔒 Si on est en train d'enregistrer, on ignore tout clic
+    if (isRecording) {
+      return;
+    }
+
     const melody = MELODIES.find((m: Melody) => m.id === melodyId);
     if (!melody) return;
 
@@ -58,6 +77,8 @@ export function MelodySelector({
     const newSelectedId = melody.id;
     setInternalSelectedId(newSelectedId);
     onChangeSelected?.(newSelectedId);
+
+    // Gestion pré-écoute (uniquement hors enregistrement)
 
     // Si on reclique sur la même → on arrête le son
     if (playingId === melody.id) {
@@ -79,7 +100,8 @@ export function MelodySelector({
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Choisis ta mélodie</Text>
       <Text style={styles.sectionSubtitle}>
-        Appuie sur un carreau pour écouter et choisir le son de l&apos;écriture.
+        Avant de démarrer l&apos;écriture, écoute et sélectionne le son qui te
+        convient.
       </Text>
 
       <View style={styles.grid}>
@@ -91,6 +113,7 @@ export function MelodySelector({
             <Pressable
               key={melody.id}
               onPress={() => void handlePress(melody.id)}
+              disabled={isRecording}
               style={({ pressed }) => [
                 styles.tile,
                 {
@@ -98,7 +121,8 @@ export function MelodySelector({
                   height: tileSize,
                 },
                 isSelected && styles.tileSelected,
-                pressed && styles.tilePressed,
+                pressed && !isRecording && styles.tilePressed,
+                isRecording && styles.tileDisabled,
               ]}
             >
               <Image source={melody.image} style={styles.tileImage} />
@@ -107,17 +131,22 @@ export function MelodySelector({
                 <Text style={styles.tileLabel}>{melody.label}</Text>
                 <Text style={styles.tileDescription}>{melody.description}</Text>
 
-                <View style={styles.tileFooter}>
-                  <Ionicons
-                    name={isPlaying ? "pause" : "play"}
-                    size={16}
-                    color="#ffffff"
-                    style={styles.tileIcon}
-                  />
-                  <Text style={styles.tileFooterText}>
-                    {isPlaying ? "En lecture" : "Tester"}
-                  </Text>
-                </View>
+                {!isRecording && (
+                  <View style={styles.tileFooter}>
+                    <Ionicons
+                      name={isPlaying ? "pause" : "play"}
+                      size={16}
+                      color={COLORS.white}
+                      style={styles.tileIcon}
+                    />
+                    <Text style={styles.tileFooterText}>
+                      {isPlaying ? "En lecture" : "Tester"}
+                    </Text>
+                  </View>
+                )}
+                {isRecording && (
+                  <Text style={styles.tileFooterText}>Mélodie verrouillée</Text>
+                )}
               </View>
             </Pressable>
           );
@@ -131,6 +160,12 @@ export function MelodySelector({
             {MELODIES.find((m: Melody) => m.id === internalSelectedId)?.label ??
               "—"}
           </Text>
+        </Text>
+      )}
+
+      {isRecording && (
+        <Text style={styles.lockedText}>
+          La sélection des mélodies est désactivée pendant l&apos;écriture.
         </Text>
       )}
     </View>
@@ -164,7 +199,7 @@ const styles = StyleSheet.create({
     margin: 6,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.18,
@@ -178,6 +213,9 @@ const styles = StyleSheet.create({
   tilePressed: {
     opacity: 0.9,
     transform: [{ scale: 0.97 }],
+  },
+  tileDisabled: {
+    opacity: 0.5,
   },
   tileImage: {
     flex: 1,
@@ -196,11 +234,11 @@ const styles = StyleSheet.create({
   tileLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#ffffff",
+    color: COLORS.white,
   },
   tileDescription: {
     fontSize: 11,
-    color: COLORS.border,
+    color: "#e5e7eb",
   },
   tileFooter: {
     marginTop: 2,
@@ -212,7 +250,7 @@ const styles = StyleSheet.create({
   },
   tileFooterText: {
     fontSize: 11,
-    color: "#ffffff",
+    color: COLORS.white,
   },
   selectedText: {
     marginTop: 4,
@@ -223,5 +261,11 @@ const styles = StyleSheet.create({
   selectedStrong: {
     fontWeight: "600",
     color: COLORS.textPrimary,
+  },
+  lockedText: {
+    marginTop: 4,
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    textAlign: "center",
   },
 });

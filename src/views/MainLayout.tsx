@@ -1,5 +1,9 @@
+// src/views/MainLayout.tsx
+// Layout principal : zone d'écriture + sélection des mélodies + métriques.
+
 import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
+
 import type { WritingAudioPort } from "../models/audio";
 import type { WritingMetrics } from "../models/types";
 import { COLORS } from "../theme";
@@ -19,10 +23,10 @@ interface MainLayoutProps {
 
 /**
  * Disposition des 4 zones dans le main :
- * 1. Zone d'écriture (pleine largeur, hauteur = 40% de la largeur écran)
+ * 1. Zone d'écriture (pleine largeur, hauteur responsive)
  * 2. Zone de sélection des mélodies
- * 3. Zone métriques cinétiques (gauche en tablette)
- * 4. Zone métriques cinématiques (droite en tablette)
+ * 3. Zone métriques cinétiques
+ * 4. Zone métriques cinématiques
  */
 export function MainLayout({
   metrics,
@@ -36,7 +40,7 @@ export function MainLayout({
   const isTablet = width >= 768;
   const isPortrait = height >= width;
 
-  // En portrait sur téléphone → zone haute (≈ 2× largeur)
+  // Hauteur de la zone d'écriture en fonction du device/orientation
   let zone1Height: number;
 
   if (isTablet) {
@@ -61,7 +65,6 @@ export function MainLayout({
           >
             <WritingArea
               isRecording={isRecording}
-              metrics={metrics}
               onMetricsChange={onMetricsChange}
               selectedMelodyId={selectedMelodyId}
               audio={audio}
@@ -76,6 +79,7 @@ export function MainLayout({
               selectedId={selectedMelodyId}
               onChangeSelected={onChangeSelectedMelody}
               audio={audio}
+              isRecording={isRecording} // 🔒 verrouille la sélection pendant l'écriture
             />
           </View>
         </View>

@@ -4,8 +4,14 @@
     "slug": "writing-app",
     "version": "1.0.0",
     "orientation": "default",
-    "assetBundlePatterns": ["**/*"],
-    "plugins": ["expo-router"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser"
+    ],
     "android": {
       "package": "com.adnanmak.writingapp",
       "versionCode": 1

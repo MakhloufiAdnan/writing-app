@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../theme";
 
 interface AppHeaderProps {
   readonly isRecording: boolean;
@@ -84,7 +85,7 @@ export function AppHeader({
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#f5ddcfff",
+    backgroundColor: COLORS.background,
   },
   container: {
     paddingHorizontal: 16,
@@ -98,13 +99,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: "700",
-    color: "#111827",
+    color: COLORS.textPrimary,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 4,
     fontSize: 14,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
     textAlign: "center",
   },
   navBar: {
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     justifyContent: "center", 
-    backgroundColor: "#e5e7eb",
+    backgroundColor: COLORS.border,
   },
   controlButton: {
     flexDirection: "row",
@@ -137,10 +138,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   startButton: {
-    backgroundColor: "#22c55e",
+    backgroundColor: COLORS.accentGreen,
   },
   stopButton: {
-    backgroundColor: "#ef4444",
+    backgroundColor: COLORS.accentRed,
   },
   controlText: {
     color: "#ffffff",

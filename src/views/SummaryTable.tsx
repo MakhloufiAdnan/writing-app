@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { WritingMetrics } from "../models/types";
+import { COLORS } from "../theme";
 
 interface SummaryTableProps {
   readonly metrics: WritingMetrics;
@@ -72,13 +73,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f5ddcfff",
+    backgroundColor: COLORS.background,
     borderRadius: 8,
   },
   title: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
     textAlign: "center",
     marginBottom: 12,
   },
@@ -86,11 +87,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#f3e6e6ff",
+    backgroundColor: COLORS.card,
   },
   table: {
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.border,
     borderRadius: 8,
     overflow: "hidden",
   },
@@ -99,11 +100,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: COLORS.border,
     justifyContent: "space-between",
   },
   tableCell: {
     fontSize: 14,
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
 });

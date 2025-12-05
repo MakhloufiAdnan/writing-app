@@ -11,6 +11,7 @@ import Svg, { Path } from "react-native-svg";
 import type { WritingAudioPort } from "../models/audio";
 import { computeMetrics, type Point, type Stroke } from "../models/metrics";
 import type { WritingMetrics } from "../models/types";
+import { COLORS } from "../theme";
 
 interface WritingAreaProps {
   readonly isRecording: boolean;
@@ -212,7 +213,7 @@ export function WritingArea({
                 <Path
                   key={key}
                   d={renderPath(stroke)}
-                  stroke="#4f46e5"
+                  stroke="#120c86ff"
                   strokeWidth={4}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
     padding: 8,
   },
   subtitle: {
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
   canvas: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.border,
     borderStyle: "dashed",
     borderRadius: 12,
     backgroundColor: "#ffffff",

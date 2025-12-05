@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import type { WritingAudioPort } from "../models/audio";
 import { MELODIES, type Melody } from "../models/melodies";
+import { COLORS } from "../theme";
 
 interface MelodySelectorProps {
   readonly selectedId?: string;
@@ -145,12 +146,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
     textAlign: "center",
   },
   sectionSubtitle: {
     fontSize: 13,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginBottom: 4,
   },
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
   },
   tileSelected: {
     borderWidth: 2,
-    borderColor: "#22c55e",
+    borderColor: COLORS.accentGreen,
   },
   tilePressed: {
     opacity: 0.9,
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   },
   tileDescription: {
     fontSize: 11,
-    color: "#e5e7eb",
+    color: COLORS.border,
   },
   tileFooter: {
     marginTop: 2,
@@ -216,11 +217,11 @@ const styles = StyleSheet.create({
   selectedText: {
     marginTop: 4,
     fontSize: 12,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
     textAlign: "center",
   },
   selectedStrong: {
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
 });

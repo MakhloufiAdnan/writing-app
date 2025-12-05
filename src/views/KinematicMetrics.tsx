@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { WritingMetrics } from "../models/types";
+import { COLORS } from "../theme";
 
 interface KinematicMetricsProps {
   readonly metrics: WritingMetrics;
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
@@ -84,11 +85,11 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontSize: 13,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
   },
   metricValue: {
     fontSize: 13,
-    color: "#111827",
+    color: COLORS.textPrimary,
     fontWeight: "500",
   },
 });

@@ -1,6 +1,5 @@
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useWritingController } from "../src/controllers/useWritingController";
 import { melodyAudioPort } from "../src/models/melodyPlayer";
@@ -16,31 +15,29 @@ export default function HomeScreen() {
   } = useWritingController();
 
   return (
-    <SafeAreaProvider>
-      <ScrollView
-        contentContainerStyle={styles.root}
-        scrollEnabled={!isRecording} // 👉 on garde le comportement actuel
-      >
-        <AppHeader
-          isRecording={isRecording}
-          onStartPress={startRecording}
-          onStopPress={stopRecording}
-        />
+    <ScrollView
+      contentContainerStyle={styles.root}
+      scrollEnabled={!isRecording} 
+    >
+      <AppHeader
+        isRecording={isRecording}
+        onStartPress={startRecording}
+        onStopPress={stopRecording}
+      />
 
-        <MainLayout
-          metrics={metrics}
-          isRecording={isRecording}
-          selectedMelodyId={selectedMelodyId}
-          onChangeSelectedMelody={changeMelody}
-          onMetricsChange={updateMetrics}
-          audio={melodyAudioPort}
-        />
+      <MainLayout
+        metrics={metrics}
+        isRecording={isRecording}
+        selectedMelodyId={selectedMelodyId}
+        onChangeSelectedMelody={changeMelody}
+        onMetricsChange={updateMetrics}
+        audio={melodyAudioPort}
+      />
 
-        <View style={styles.summaryTableContainer}>
-          <SummaryTable metrics={metrics} />
-        </View>
-      </ScrollView>
-    </SafeAreaProvider>
+      <View style={styles.summaryTableContainer}>
+        <SummaryTable metrics={metrics} />
+      </View>
+    </ScrollView>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import type { WritingMetrics } from "../models/types";
+import { COLORS } from "../theme";
 
 interface KineticMetricsProps {
   readonly metrics: WritingMetrics;
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 12,
@@ -95,23 +96,23 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontSize: 13,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
   },
   metricValue: {
     fontSize: 13,
-    color: "#111827",
+    color: COLORS.textPrimary,
     fontWeight: "500",
   },
   fluidityBlock: {
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+    borderTopColor: COLORS.border,
     gap: 4,
   },
   fluidityLabel: {
     fontSize: 13,
-    color: "#4b5563",
+    color: COLORS.textSecondary,
   },
   fluidityRow: {
     flexDirection: "row",
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   fluidityValue: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
   badgeBase: {
     paddingHorizontal: 10,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
   badgeGood: {
     backgroundColor: "#bbf7d0",

@@ -4,6 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useWritingController } from "../src/controllers/useWritingController";
 import { melodyAudioPort } from "../src/models/melodyPlayer";
+import { COLORS } from "../src/theme";
 import { AppHeader } from "../src/views/AppHeader";
 import { MainLayout } from "../src/views/MainLayout";
 import { SummaryTable } from "../src/views/SummaryTable";
@@ -18,7 +19,7 @@ export default function HomeScreen() {
     <SafeAreaProvider>
       <ScrollView
         contentContainerStyle={styles.root}
-        scrollEnabled={!isRecording}
+        scrollEnabled={!isRecording} // 👉 on garde le comportement actuel
       >
         <AppHeader
           isRecording={isRecording}
@@ -46,9 +47,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: {
     flexGrow: 1,
-    backgroundColor: "#f5ddcfff",
+    backgroundColor: COLORS.background,
     paddingHorizontal: 16,
     paddingTop: 40,
+    alignItems: "center",
   },
   summaryTableContainer: {
     width: "100%",

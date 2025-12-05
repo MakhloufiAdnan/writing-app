@@ -1,12 +1,8 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import type { WritingAudioPort } from "../models/audio";
 import type { WritingMetrics } from "../models/types";
+import { COLORS } from "../theme";
 import { KinematicMetrics } from "./KinematicMetrics";
 import { KineticMetrics } from "./KineticMetrics";
 import { MelodySelector } from "./MelodySelector";
@@ -39,8 +35,8 @@ export function MainLayout({
   const { width, height } = useWindowDimensions();
   const isTablet = width >= 768;
   const isPortrait = height >= width;
-  
-  // En portrait sur téléphone → zone haute (≈ 2× largeur
+
+  // En portrait sur téléphone → zone haute (≈ 2× largeur)
   let zone1Height: number;
 
   if (isTablet) {
@@ -53,11 +49,7 @@ export function MainLayout({
 
   return (
     <View style={styles.root}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={!isRecording}
-      >
+      <View style={styles.container}>
         {/* Zone 1 : Zone d'écriture */}
         <View style={styles.fullWidth}>
           <View
@@ -105,15 +97,14 @@ export function MainLayout({
             </View>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
-    flex: 1,
-    backgroundColor: "#f5ddcfff",
+    width: "100%",
   },
   container: {
     padding: 12,
@@ -127,7 +118,7 @@ const styles = StyleSheet.create({
   zoneCard: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#f3e6e6ff",
+    backgroundColor: COLORS.card,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -153,7 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#f3e6e6ff",
+    backgroundColor: COLORS.card,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

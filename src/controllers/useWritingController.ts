@@ -28,7 +28,11 @@ export function useWritingController(
     useState<string>(initialMelodyId);
 
   const startRecording = useCallback(() => {
+
+    // On reset les métriques à chaque démarrage de session
+    setMetrics(emptyMetrics);
     setIsRecording(true);
+    
   }, []);
 
   const stopRecording = useCallback(() => {

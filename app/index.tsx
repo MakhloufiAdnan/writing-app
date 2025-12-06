@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { useWritingController } from "../src/controllers/useWritingController";
@@ -9,26 +9,59 @@ import { MainLayout } from "../src/views/MainLayout";
 import { SummaryTable } from "../src/views/SummaryTable";
 
 export default function HomeScreen() {
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
+
   const {
-    state: { metrics, isRecording, selectedMelodyId },
-    actions: { startRecording, stopRecording, changeMelody, updateMetrics },
+    state: {
+      metrics,
+      isRecording,
+      selectedMelodyId,
+      writingMode,
+      strokeWidth,
+      eraserWidth,
+      isEraserActive,
+    },
+    actions: {
+      startRecording,
+      stopRecording,
+      changeMelody,
+      updateMetrics,
+      changeWritingMode,
+      changeStrokeWidth,
+      changeEraserWidth,
+      setEraserActive,
+    },
   } = useWritingController();
 
   return (
     <ScrollView
       contentContainerStyle={styles.root}
-      scrollEnabled={!isRecording} 
+      // Bloque le scroll pendant l'enregistrement OU quand un menu outils est ouvert
+      scrollEnabled={!isRecording && !isToolsMenuOpen}
     >
       <AppHeader
         isRecording={isRecording}
         onStartPress={startRecording}
         onStopPress={stopRecording}
+        writingMode={writingMode}
+        onChangeWritingMode={changeWritingMode}
+        strokeWidth={strokeWidth}
+        onChangeStrokeWidth={changeStrokeWidth}
+        eraserWidth={eraserWidth}
+        onChangeEraserWidth={changeEraserWidth}
+        isEraserActive={isEraserActive}
+        onChangeEraserActive={setEraserActive}
+        onToolsMenuOpenChange={setIsToolsMenuOpen}
       />
 
       <MainLayout
         metrics={metrics}
         isRecording={isRecording}
         selectedMelodyId={selectedMelodyId}
+        writingMode={writingMode}
+        strokeWidth={strokeWidth}
+        eraserWidth={eraserWidth}
+        isEraserActive={isEraserActive}
         onChangeSelectedMelody={changeMelody}
         onMetricsChange={updateMetrics}
         audio={melodyAudioPort}

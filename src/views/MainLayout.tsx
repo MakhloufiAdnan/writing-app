@@ -1,11 +1,13 @@
-// src/views/MainLayout.tsx
-// Layout principal : zone d'écriture + sélection des mélodies + métriques.
-
 import React from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 
 import type { WritingAudioPort } from "../models/audio";
-import type { WritingMetrics } from "../models/types";
+import type {
+  EraserWidth,
+  StrokeWidth,
+  WritingMetrics,
+  WritingMode,
+} from "../models/types";
 import { COLORS } from "../theme";
 import { KinematicMetrics } from "./KinematicMetrics";
 import { KineticMetrics } from "./KineticMetrics";
@@ -16,6 +18,10 @@ interface MainLayoutProps {
   readonly metrics: WritingMetrics;
   readonly isRecording: boolean;
   readonly selectedMelodyId: string;
+  readonly writingMode: WritingMode;
+  readonly strokeWidth: StrokeWidth;
+  readonly eraserWidth: EraserWidth;
+  readonly isEraserActive: boolean;
   readonly onChangeSelectedMelody: (id: string) => void;
   readonly onMetricsChange: (metrics: WritingMetrics) => void;
   readonly audio: WritingAudioPort;
@@ -32,6 +38,10 @@ export function MainLayout({
   metrics,
   isRecording,
   selectedMelodyId,
+  writingMode,
+  strokeWidth,
+  eraserWidth,
+  isEraserActive,
   onChangeSelectedMelody,
   onMetricsChange,
   audio,
@@ -67,6 +77,10 @@ export function MainLayout({
               isRecording={isRecording}
               onMetricsChange={onMetricsChange}
               selectedMelodyId={selectedMelodyId}
+              writingMode={writingMode}
+              strokeWidth={strokeWidth}
+              eraserWidth={eraserWidth}
+              isEraserActive={isEraserActive}
               audio={audio}
             />
           </View>
@@ -79,7 +93,7 @@ export function MainLayout({
               selectedId={selectedMelodyId}
               onChangeSelected={onChangeSelectedMelody}
               audio={audio}
-              isRecording={isRecording} // 🔒 verrouille la sélection pendant l'écriture
+              isRecording={isRecording}
             />
           </View>
         </View>

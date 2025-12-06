@@ -1,10 +1,20 @@
 import { useCallback, useState } from "react";
-import { emptyMetrics, type WritingMetrics } from "../models/types";
+import {
+  emptyMetrics,
+  type EraserWidth,
+  type StrokeWidth,
+  type WritingMetrics,
+  type WritingMode,
+} from "../models/types";
 
 interface WritingControllerState {
   metrics: WritingMetrics;
   isRecording: boolean;
   selectedMelodyId: string;
+  writingMode: WritingMode;
+  strokeWidth: StrokeWidth;
+  eraserWidth: EraserWidth;
+  isEraserActive: boolean;
 }
 
 interface WritingControllerActions {
@@ -12,6 +22,11 @@ interface WritingControllerActions {
   stopRecording: () => void;
   changeMelody: (id: string) => void;
   updateMetrics: (metrics: WritingMetrics) => void;
+
+  changeWritingMode: (mode: WritingMode) => void;
+  changeStrokeWidth: (width: StrokeWidth) => void;
+  changeEraserWidth: (width: EraserWidth) => void;
+  setEraserActive: (active: boolean) => void;
 }
 
 interface UseWritingControllerResult {
@@ -19,6 +34,9 @@ interface UseWritingControllerResult {
   actions: WritingControllerActions;
 }
 
+/**
+ * Hook de contrôle de la session d'écriture.
+ */
 export function useWritingController(
   initialMelodyId = "melody1"
 ): UseWritingControllerResult {
@@ -26,6 +44,11 @@ export function useWritingController(
   const [isRecording, setIsRecording] = useState(false);
   const [selectedMelodyId, setSelectedMelodyId] =
     useState<string>(initialMelodyId);
+
+  const [writingMode, setWritingMode] = useState<WritingMode>("blank"); // zone blanche par défaut
+  const [strokeWidth, setStrokeWidth] = useState<StrokeWidth>(3); // moyen
+  const [eraserWidth, setEraserWidth] = useState<EraserWidth>(4); // moyenne
+  const [isEraserActive, setIsEraserActive] = useState(false);
 
   const startRecording = useCallback(() => {
 
@@ -47,17 +70,41 @@ export function useWritingController(
     setMetrics(newMetrics);
   }, []);
 
+  const changeWritingMode = useCallback((mode: WritingMode) => {
+    setWritingMode(mode);
+  }, []);
+
+  const changeStrokeWidth = useCallback((width: StrokeWidth) => {
+    setStrokeWidth(width);
+  }, []);
+
+  const changeEraserWidth = useCallback((width: EraserWidth) => {
+    setEraserWidth(width);
+  }, []);
+
+  const setEraserActive = useCallback((active: boolean) => {
+    setIsEraserActive(active);
+  }, []);
+
   return {
     state: {
       metrics,
       isRecording,
       selectedMelodyId,
+      writingMode,
+      strokeWidth,
+      eraserWidth,
+      isEraserActive,
     },
     actions: {
       startRecording,
       stopRecording,
       changeMelody,
       updateMetrics,
+      changeWritingMode,
+      changeStrokeWidth,
+      changeEraserWidth,
+      setEraserActive,
     },
   };
 }

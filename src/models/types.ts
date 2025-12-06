@@ -1,4 +1,13 @@
-/** Toutes les métriques affichés dans le tableau de bord */
+/** Mode de la zone d'écriture */
+export type WritingMode = "blank" | "seyes";
+
+/** Épaisseur du trait (en pixels) */
+export type StrokeWidth = 1 | 2 | 3 | 4;
+
+/** Épaisseur de la gomme (en pixels) */
+export type EraserWidth = 2 | 4 | 8;
+
+/** Toutes les métriques affichées dans le tableau de bord */
 export interface WritingMetrics {
   // Cinétiques
   appliedForce: number;   // Force moyenne appliquée (0–100)

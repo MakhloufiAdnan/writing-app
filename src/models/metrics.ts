@@ -7,16 +7,22 @@ export type Stroke = Point[];
 const PX_PER_MM = 3.78;
 // Seuil changement brusque de vitesse
 const SPEED_CHANGE_THRESHOLD = 600; // px/s
-// Seuil de pause entre traits
+// Seuil de pause entre traits (levée de stylo)
 const PAUSE_THRESHOLD_MS = 150; // ms
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+/**
+ * Calcule les pauses entre traits (levées de stylo).
+ * On renvoie :
+ * - le temps total de pause,
+ * - la liste des durées individuelles (pour le graphique).
+ */
 function computePauseStats(strokes: Stroke[]) {
   let totalPauseMs = 0;
-  let pauseCount = 0;
+  const pauseDurations: number[] = [];
 
   for (let i = 0; i < strokes.length - 1; i++) {
     const currentStroke = strokes[i];
@@ -29,11 +35,11 @@ function computePauseStats(strokes: Stroke[]) {
     const pause = firstNext.t - lastPoint.t;
     if (pause > PAUSE_THRESHOLD_MS) {
       totalPauseMs += pause;
-      pauseCount += 1;
+      pauseDurations.push(pause);
     }
   }
 
-  return { totalPauseMs, pauseCount };
+  return { totalPauseMs, pauseDurations };
 }
 
 function computeSpeedStats(strokes: Stroke[]) {
@@ -97,6 +103,10 @@ function computeAverageForce(points: Point[]): number {
   return Math.round(avgForce * 100);
 }
 
+/**
+ * Approximation du nombre de "corrections"
+ * via les changements d'angle brusques.
+ */
 function computeCorrections(strokes: Stroke[]) {
   let corrections = 0;
 
@@ -123,20 +133,26 @@ function computeCorrections(strokes: Stroke[]) {
   return corrections;
 }
 
+/**
+ * Fonction principale de calcul des métriques.
+ * Elle produit des agrégats + la liste des levées de stylo (pauses).
+ */
 export function computeMetrics(strokes: Stroke[]): WritingMetrics {
   const allPoints = strokes.flat();
   if (allPoints.length < 2) {
-    return { ...emptyMetrics };
+    return { ...emptyMetrics, penLiftDurations: [] };
   }
 
-  const { totalPauseMs, pauseCount } = computePauseStats(strokes);
+  const { totalPauseMs, pauseDurations } = computePauseStats(strokes);
+  const pauseCount = pauseDurations.length;
+
   const { totalDistance, speeds, suddenChanges } = computeSpeedStats(strokes);
 
   const firstPoint = allPoints[0];
   const lastPoint = allPoints.at(-1);
 
   if (!lastPoint) {
-    return { ...emptyMetrics };
+    return { ...emptyMetrics, penLiftDurations: pauseDurations };
   }
 
   const totalTimeMs = lastPoint.t - firstPoint.t;
@@ -150,6 +166,7 @@ export function computeMetrics(strokes: Stroke[]): WritingMetrics {
   const wordLengthMm = (maxX - minX) / PX_PER_MM;
   const amplitudeMm = (maxY - minY) / PX_PER_MM;
 
+  // Scores dérivés
   const pauseRatio = totalTimeMs > 0 ? totalPauseMs / totalTimeMs : 0;
   const pauseTimeScore = 1 - clamp(pauseRatio / 0.5, 0, 1);
   const pauseCountScore = 1 - clamp(pauseCount / 6, 0, 1);
@@ -190,5 +207,6 @@ export function computeMetrics(strokes: Stroke[]): WritingMetrics {
     corrections,
     amplitude: Math.round(amplitudeMm),
     wordLength: Math.round(wordLengthMm),
+    penLiftDurations: pauseDurations,
   };
 }

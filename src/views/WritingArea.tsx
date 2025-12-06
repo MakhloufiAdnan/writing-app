@@ -1,5 +1,4 @@
-import type { ReactElement } from "react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, type ReactElement } from "react";
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
@@ -48,12 +47,12 @@ interface WritingAreaProps {
  * - Une marge verticale rouge à gauche.
  *
  * NB : On adapte l'espacement à la hauteur de la zone pour rester lisible
- * sur téléphone / tablette, sans chercher à respecter une échelle physique parfaite en mm.
+ * sur téléphone / tablette.
  */
 function renderSeyesGrid(width: number, height: number): ReactElement[] {
   const elements: ReactElement[] = [];
 
-  // On choisit ~10 grandes lignes dans la hauteur
+  // On choisit ~10 grandes lignes principales dans la hauteur
   const mainSpacing = height / 10;
   const smallSpacing = mainSpacing / 4;
 
@@ -98,13 +97,37 @@ function renderSeyesGrid(width: number, height: number): ReactElement[] {
 }
 
 /**
- * Zone d'écriture :
- * - dessine les traits de l'utilisateur
- * - calcule les métriques en temps quasi réel
- * - pilote l'audio en fonction des mouvements
- * - affiche un fond blanc ou Seyès selon writingMode
- * - affiche toujours une ligne rouge au milieu de la hauteur
- * - prend en compte l'épaisseur du trait et la gomme
+ * Calcule un volume audio (0.2 → 0.8) en fonction de la hauteur
+ * par rapport à la ligne rouge centrale.
+ *
+ * - Ligne rouge (centre) → volume 0.5
+ * - Jusqu'à ~3 interlignes au-dessus → volume 0.8
+ * - Jusqu'à ~3 interlignes en dessous → volume 0.2
+ */
+function computeVolumeFromHeight(y: number, canvasHeight: number): number {
+  if (canvasHeight <= 0) {
+    return 0.5;
+  }
+
+  const midY = canvasHeight / 2;
+
+  // 1 "grande" interligne ≈ hauteur / 10
+  const mainSpacing = canvasHeight / 10;
+  const maxOffset = 3 * mainSpacing; // "3 carreaux" au sens 3 interlignes
+
+  const dy = midY - y; // >0 au-dessus de la ligne rouge
+  const clamped =
+    maxOffset > 0 ? Math.max(-maxOffset, Math.min(maxOffset, dy)) : 0;
+
+  const normalized = maxOffset > 0 ? clamped / maxOffset : 0; // [-1, 1]
+
+  // Volume (0.2 → 0.8), 0.5 au centre.
+  const volume = 0.5 + 0.3 * normalized;
+  return Math.max(0.2, Math.min(0.8, volume));
+}
+
+/**
+ * Zone d'écriture.
  */
 export function WritingArea({
   isRecording,
@@ -160,7 +183,7 @@ export function WritingArea({
   /**
    * Gère :
    * - l'arrêt de toute musique quand on passe en mode enregistrement (pour couper la pré-écoute)
-   * - le changement de mélodie pendant l'écriture (header la verrouille, mais on garde le comportement au cas où)
+   * - le changement de mélodie pendant l'écriture (au cas où on l'autoriserait plus tard)
    */
   useEffect(() => {
     const prevSelectedId = prevSelectedIdRef.current;
@@ -171,8 +194,6 @@ export function WritingArea({
       void audio.stop();
     }
 
-    // Si un jour on autorise le changement de mélodie pendant l'écriture,
-    // ce bloc permettra de basculer en douceur.
     if (
       isRecording &&
       selectedMelodyId &&
@@ -235,6 +256,10 @@ export function WritingArea({
       void audio.playLoop(selectedMelodyId);
     }
 
+    // Variation de volume selon la hauteur par rapport à la ligne rouge
+    const volume = computeVolumeFromHeight(point.y, canvasSize.height);
+    void audio.updateVolume(volume);
+
     const newMetrics = computeMetrics(newMetricsStrokes);
     onMetricsChange(newMetrics);
     lastMetricsUpdateRef.current = now;
@@ -290,6 +315,10 @@ export function WritingArea({
       }
     }
     lastPointRef.current = point;
+
+    // Variation de volume en fonction de la hauteur
+    const volume = computeVolumeFromHeight(point.y, canvasSize.height);
+    void audio.updateVolume(volume);
 
     // Throttle des métriques pour éviter les recalculs excessifs
     const lastUpdate = lastMetricsUpdateRef.current;

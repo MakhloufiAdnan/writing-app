@@ -15,6 +15,7 @@ class MelodyPlayer {
     const { loop = false, volume = 0.8 } = options ?? {};
 
     try {
+      // Même son déjà chargé → on ajuste juste le statut
       if (this.sound && this.currentMelodyId === melodyId) {
         await this.sound.setStatusAsync({
           isLooping: loop,
@@ -22,6 +23,7 @@ class MelodyPlayer {
           volume,
         });
       } else {
+        // Nouveau son → on décharge l'ancien
         if (this.sound) {
           try {
             await this.sound.stopAsync();
@@ -70,6 +72,7 @@ class MelodyPlayer {
   async updateRateForSpeed(speedPxPerSec: number) {
     if (!this.sound) return;
 
+    // Vitesse de lecture entre 0.8x et 1.6x selon la vitesse d'écriture.
     const minRate = 0.8;
     const maxRate = 1.6;
     const clamped = Math.max(0, Math.min(1500, speedPxPerSec));
@@ -83,6 +86,23 @@ class MelodyPlayer {
       });
     } catch (error) {
       console.warn("Erreur ajustement vitesse son", error);
+    }
+  }
+
+  /**
+   * Ajuste le volume de lecture (0–1).
+   */
+  async updateVolume(volume: number) {
+    if (!this.sound) return;
+
+    const clamped = Math.max(0, Math.min(1, volume));
+
+    try {
+      await this.sound.setStatusAsync({
+        volume: clamped,
+      });
+    } catch (error) {
+      console.warn("Erreur ajustement volume son", error);
     }
   }
 
@@ -108,6 +128,10 @@ export const melodyAudioPort: WritingAudioPort = {
 
   async updateRate(speedPxPerSec: number) {
     await melodyPlayer.updateRateForSpeed(speedPxPerSec);
+  },
+
+  async updateVolume(volume: number) {
+    await melodyPlayer.updateVolume(volume);
   },
 
   async pause() {

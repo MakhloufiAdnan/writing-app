@@ -1,5 +1,12 @@
+// src/views/MainLayout.tsx
+// Disposition des 4 zones :
+// 1. Zone d'écriture
+// 2. Sélecteur de mélodie
+// 3. Métriques cinétiques
+// 4. Métriques cinématiques
+
 import React from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { Platform, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import type { WritingAudioPort } from "../models/audio";
 import type {
@@ -27,13 +34,6 @@ interface MainLayoutProps {
   readonly audio: WritingAudioPort;
 }
 
-/**
- * Disposition des 4 zones dans le main :
- * 1. Zone d'écriture (pleine largeur, hauteur responsive)
- * 2. Zone de sélection des mélodies
- * 3. Zone métriques cinétiques
- * 4. Zone métriques cinématiques
- */
 export function MainLayout({
   metrics,
   isRecording,
@@ -50,15 +50,23 @@ export function MainLayout({
   const isTablet = width >= 768;
   const isPortrait = height >= width;
 
-  // Hauteur de la zone d'écriture en fonction du device/orientation
+  // On ne veut jamais dépasser la largeur max de notre layout (1000)
+  const effectiveWidth = Math.min(width, 1000);
+
   let zone1Height: number;
 
-  if (isTablet) {
-    zone1Height = width * 0.6;
+  if (Platform.OS === "web") {
+    // 💻 Mode web : hauteur = 60% de la largeur du contenu
+    zone1Height = effectiveWidth * 0.6;
+  } else if (isTablet) {
+    // Tablette native : hauteur plus généreuse
+    zone1Height = effectiveWidth * 0.6;
   } else if (isPortrait) {
-    zone1Height = width * 2;
+    // Téléphone portrait : zone haute plus grande pour faciliter l'écriture
+    zone1Height = effectiveWidth * 2;
   } else {
-    zone1Height = width * 1.2;
+    // Téléphone paysage
+    zone1Height = effectiveWidth * 1.2;
   }
 
   return (

@@ -195,9 +195,9 @@ export function AppHeader({
                       name="pencil"
                       size={16}
                       color={
-                        !isEraserActive
-                          ? COLORS.textPrimary
-                          : COLORS.textSecondary
+                        isEraserActive
+                          ? COLORS.textSecondary // gomme active → crayon "désactivé"
+                          : COLORS.textPrimary // gomme inactive → crayon "actif"
                       }
                     />
                     <Text
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   // Menus déroulants (ouvrent vers le haut)
   dropdownMenu: {
     position: "absolute",
-    bottom: "100%", 
+    bottom: "100%",
     left: 0,
     right: 0,
     marginBottom: 4,
